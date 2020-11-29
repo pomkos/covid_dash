@@ -117,4 +117,4 @@ crontab -e
 @reboot /home/covid_dash.sh
 ```
 
-5. Access the portfolio at `localhost:8503`
+5. Access the portfolio at `localhost:8504`
