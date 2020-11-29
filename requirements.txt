@@ -1,0 +1,8 @@
+datetime # datetime formatting and selecting
+numpy # nan and datetime comparison
+pandas # dataset manipulation
+plotly # covid dash
+pytz # timezone specification
+statsmodels # ols regression line in plotly scatterplot
+streamlit # webgui
+sqlalchemy # sqlite db examination
