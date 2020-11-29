@@ -36,9 +36,11 @@ See at: https://covid.peti.work
   * [x] Date only on x-axis
   * [x] Floats and integers on x-, y-axes but not legend
   * [x] Dynamic plot title
-* Premade dataset summary
+* Dataset summary
   * [x] Descriptive statistics
   * [x] Usermade customizable dataset summary
+* Get the data
+  * [x] Download plot (via plotly)
   
 ## WIP
 * Premade plots
@@ -48,7 +50,7 @@ See at: https://covid.peti.work
 * Usermade plots
   * [ ] Only categorical variables in legend
   * [ ] Ability to choose countries outside plotly
-* Premade dataset summary
+* Dataset summary
   * [ ] Comparative statistics
   * [ ] Predictive statistics
   * [ ] Download customized dataset
