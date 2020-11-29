@@ -79,7 +79,7 @@ pip install -r requirements.txt
 ```
 3. Start the application:
 ```
-streamlit run apps/covid_dash.py
+streamlit run covid_dash.py
 ```
 5. Access the portfolio at `localhost:8501`
 
@@ -102,7 +102,7 @@ source ~/anaconda3/etc/profile.d/conda.sh
 cd ~/covid_dash
 conda activate covid_env
 
-nohup streamlit run apps/covid_dash.py --server.port 8504 &
+nohup streamlit run covid_dash.py --server.port 8504 &
 ```
 
 3. Edit crontab so portfolio is started when server reboots
