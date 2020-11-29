@@ -102,7 +102,7 @@ source ~/anaconda3/etc/profile.d/conda.sh
 cd ~/covid_dash
 conda activate covid_env
 
-nohup streamlit run apps/covid_dash.py --server.port 8503 &
+nohup streamlit run apps/covid_dash.py --server.port 8504 &
 ```
 
 3. Edit crontab so portfolio is started when server reboots
