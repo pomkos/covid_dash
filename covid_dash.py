@@ -164,7 +164,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      hue='location',
                                      title='Positivity rate by country'),
                         use_container_width = False)
-        st.info('A positivity rate of 0.2 is recommended as the goal by the W.H.O. for each nation.')
+        st.info('The W.H.O. recommends a positivity rate of at most 5% for two weeks before nations reopen.')
     if 'Hospital vs Deaths' in plot_selected:
         st.plotly_chart(scat_plotter('new_cases_smoothed_per_million',
                                      'hosp_patients_per_million',
