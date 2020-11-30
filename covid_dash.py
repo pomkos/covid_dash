@@ -348,7 +348,8 @@ def view_dataset(dataset, columns=None):
 def app():
     '''Bulk of webgui, calls relevant functions'''
     st.title('Covid Dash')
-    data_choice = st.radio('Which dataset?',['United States','World'],index=1)
+    with st.beta_expander('Which dataset?'):
+        data_choice = st.radio('',['United States','World'],index=1)
         
     if data_choice.lower() == 'united states':
         st.info('Not implemented (yet)')
