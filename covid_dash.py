@@ -183,7 +183,7 @@ def premade(premade_df, plot_selected, date_selected):
                 st.success(result)
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
-    '''Presents options for user to make own graph, then calls line_plotter()'''
+    '''Presents options for user to make own graph, then calls the appropriate plotter()'''
     # webgui
     col_x, col_y, col_hue = st.beta_columns(3)
     with col_x:
@@ -301,10 +301,11 @@ def view_dataset(dataset, columns=None):
     with st.spinner(text='Loading ...'):
         time.sleep(1)
         if ('Nothing' in group_choices):
+            st.table(show_df.head(20))
             st.success(f'Showing the requested table!')
         else:
+            st.table(show_df)
             st.success(f'Grouped each of {[str_formatter(x) for x in group_choices]} by {group_desc}!')
-        st.table(show_df.head(20))
         
     if "graph" in graph_me.lower():
         y_options = list(show_df.columns)
@@ -373,7 +374,7 @@ def app():
         with col_plots:
             plt_type = st.selectbox('Plot Type',['Barplot','Lineplot','Scatterplot'], index=1)
         with col_dates:
-            date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,1,1),dt.datetime.now()))
+            date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,3,1),dt.datetime.now()))
         x_options = []
         y_options = []
         hue_options = []
