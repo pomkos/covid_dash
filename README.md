@@ -45,14 +45,15 @@ See at: https://covid.peti.work
 ## WIP
 * Premade plots
   * [ ] Description of each plot
-  * [ ] Positivity rate per country
+  * [x] Positivity rate per country
       * [ ] With customizable date
 * Usermade plots
   * [ ] Only categorical variables in legend
-  * [ ] Ability to choose countries outside plotly
+    * [ ] Depending on plot type (bar, line, scatter)
+  * [x] Ability to choose countries outside plotly
 * Dataset summary
-  * [ ] Comparative statistics
-  * [ ] Predictive statistics
+  * [ ] Comparative statistics (traditional stats)
+  * [ ] Predictive statistics (machine learning)
   * [ ] Download customized dataset
 * [ ] Premade heatmaps
 * [ ] Usermade heatmaps
