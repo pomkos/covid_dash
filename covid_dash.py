@@ -35,7 +35,10 @@ cols = list(df.columns)
 cols.sort()
 df = df[cols]
 
+########################
 ### HELPER FUNCTIONS ###
+########################
+
 def str_formatter(my_str):
     '''
     To make choices and axes pretty
@@ -48,15 +51,6 @@ def find_default(my_list, my_string):
         if obj.lower() == my_string:
             my_index = i
     return my_index
-
-def col_types(dataset,dtypes):
-    '''
-    Selects columns by dtype and stores in a dictionary
-    '''
-    col_dict = {}
-    for t in dtypes:
-        col_dict[f'cols_{t}'] = list(df.select_dtypes(t).columns)
-    return col_dict
 
 def hue_formatter(x,y,hue):
     if hue == None:
@@ -73,7 +67,23 @@ def hue_formatter(x,y,hue):
               }
     return labels
 
+def dataset_filterer(dataset, col, default_selected=None):
+    '''
+    Returns the dataset filtered by user's choice of unique values from given column
+    '''
+    options = list(dataset[col].unique())
+    options.sort()
+    chosen = st.multiselect(f'Select {col}s',
+                          options,
+                          default = default_selected
+                         )
+    new_df = dataset[dataset[col].isin(chosen)]
+    return new_df
+
+######################
 ### PLOT FUNCTIONS ###
+######################
+
 def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ols=None):
     '''Plotly plots a scatterplot'''
     if title == None:
@@ -109,6 +119,7 @@ def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,ti
     return my_plot
 
 def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
+    '''Plotly plots a barplot'''
     labels = hue_formatter(x,y,hue)
     my_plot = px.bar(
         data_frame = dataset,
@@ -122,7 +133,9 @@ def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
         labels = labels)
     return my_plot
 
-### VIEWS GUI ###
+################
+### MAIN APP ###
+################
 def premade(plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
     premade_df = df[(df['location']=='Hungary') | (df['location']=='United States') | (df['location']=='Brazil') | (df['location']=='India')]
@@ -165,16 +178,6 @@ def premade(plot_selected, date_selected):
         with st.spinner('Beaming the bytes  ...'):
             result = ucd.app()
             st.success(result)
-
-def dataset_filterer(dataset, col, default_selected=None):
-        options = list(dataset[col].unique())
-        options.sort()
-        chosen = st.multiselect(f'Select {col}s',
-                              options,
-                              default = default_selected
-                             )
-        new_df = dataset[dataset[col].isin(chosen)]
-        return new_df
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls line_plotter()'''
@@ -381,7 +384,5 @@ def app():
         
     if view_type == "Dataset":
         view_dataset(df)
-################################# FOR TESTING #################################
-app()
-###############################################################################
 
+app()
