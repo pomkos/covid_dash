@@ -10,9 +10,11 @@ import plotly.express as px # plots
 
 import sqlalchemy as sq # sql
 import os # current directory
+
 ###############
 ## Load data ##
 ###############
+
 parent = os.path.dirname(os.getcwd()) # get parent of current directory
 #########################################################################
 engine = sq.create_engine(f'sqlite:///data/covid.db')
@@ -174,7 +176,7 @@ def dataset_filterer(dataset, col, default_selected=None):
         new_df = dataset[dataset[col].isin(chosen)]
         return new_df
             
-def build_own(x_options,y_options,hue_options,date_selected):
+def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls line_plotter()'''
     # webgui
     col_x, col_y, col_hue = st.beta_columns(3)
@@ -202,9 +204,16 @@ def build_own(x_options,y_options,hue_options,date_selected):
                             'Oceania']
     else:
         default_selected = None
+        
     byo_df = dataset_filterer(df, hue, default_selected=default_selected)
-
-    st.plotly_chart(line_plotter(x,y,date_selected,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
+    
+    if plt_type.lower() == 'lineplot':
+        st.plotly_chart(line_plotter(x,y,date_selected,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
+    elif plt_type.lower() == 'scatterplot':
+        
+        st.plotly_chart(scat_plotter(x,y,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
+    else:
+        st.plotly_chart(bar_plotter(x,y,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
 
 def view_dataset(dataset, columns=None):
     '''View the dataset, certain or all columns'''
@@ -265,7 +274,7 @@ def view_dataset(dataset, columns=None):
                 pass        
         if ('Nothing' in group_choices):
             show_df = show_df
-            st.warning(f"WARNING: Current settings will load all rows of the dataset")
+            st.warning(f"To save on memory, current settings will only load the first 20 rows of the dataset")
             nothing_continue = st.button('Continue')
             if nothing_continue == False:
                 st.stop()
@@ -290,7 +299,7 @@ def view_dataset(dataset, columns=None):
             st.success(f'Showing the requested table!')
         else:
             st.success(f'Grouped each of {[str_formatter(x) for x in group_choices]} by {group_desc}!')
-        st.table(show_df.head())
+        st.table(show_df.head(20))
         
     if "graph" in graph_me.lower():
         y_options = list(show_df.columns)
@@ -333,7 +342,15 @@ def view_dataset(dataset, columns=None):
     
 def app():
     '''Bulk of webgui, calls relevant functions'''
-    st.title('Covid Dash')
+    col_title, col_dataset = st.beta_columns(2)
+    with col_title:
+        st.title('Covid Dash')
+    with col_dataset:
+        data_choice = st.radio('Which dataset?',['United States','World'],index=1)
+        
+    if data_choice.lower() == 'united states':
+        st.info('Not implemented (yet)')
+        st.stop()
     view_type = st.select_slider("",options=('Premade Plots','Build Your Own!','Dataset'))
     if view_type == "Premade Plots":
         col_sel, col_date = st.beta_columns(2)
@@ -346,7 +363,12 @@ def app():
         premade(plot_selected, date_selected)
 
     if view_type == "Build Your Own!":
-        date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,1,1),dt.datetime.now()))
+        col_plots, col_dates = st.beta_columns(2)
+        
+        with col_plots:
+            plt_type = st.selectbox('Plot Type',['Barplot','Lineplot','Scatterplot'], index=1)
+        with col_dates:
+            date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,1,1),dt.datetime.now()))
         x_options = []
         y_options = []
         hue_options = []
@@ -355,7 +377,7 @@ def app():
         y_options += list(df.select_dtypes(include=[float,int]).columns)
         hue_options += list(df.select_dtypes(include=[object, 'category']).columns)
 
-        build_own(x_options,y_options,hue_options,date_selected)
+        build_own(x_options,y_options,hue_options,date_selected, plt_type)
         
     if view_type == "Dataset":
         view_dataset(df)
