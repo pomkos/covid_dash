@@ -173,6 +173,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      do_ols='ols',
                                      hue='location'), 
                         use_container_width = False)
+    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
     with st.beta_expander('Advanced settings'):
         update = st.button('Update Database')
         if update == True:
@@ -346,11 +347,8 @@ def view_dataset(dataset, columns=None):
     
 def app():
     '''Bulk of webgui, calls relevant functions'''
-    col_title, col_dataset = st.beta_columns(2)
-    with col_title:
-        st.title('Covid Dash')
-    with col_dataset:
-        data_choice = st.radio('Which dataset?',['United States','World'],index=1)
+    st.title('Covid Dash')
+    data_choice = st.radio('Which dataset?',['United States','World'],index=1)
         
     if data_choice.lower() == 'united states':
         st.info('Not implemented (yet)')
@@ -366,7 +364,6 @@ def app():
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
         premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
         premade(premade_df, plot_selected, date_selected)
-        st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
 
 
     if view_type == "Build Your Own!":
