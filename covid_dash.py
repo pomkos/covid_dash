@@ -173,13 +173,13 @@ def premade(premade_df, plot_selected, date_selected):
                                      do_ols='ols',
                                      hue='location'), 
                         use_container_width = False)
-        
-    update = st.button('Update Database')
-    if update == True:
-        import update_covid_db as ucd
-        with st.spinner('Beaming the bytes  ...'):
-            result = ucd.app()
-            st.success(result)
+    with st.beta_expander('Advanced settings'):
+        update = st.button('Update Database')
+        if update == True:
+            import update_covid_db as ucd
+            with st.spinner('Beaming the bytes  ...'):
+                result = ucd.app()
+                st.success(result)
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls line_plotter()'''
@@ -365,8 +365,9 @@ def app():
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
         premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
-        st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
         premade(premade_df, plot_selected, date_selected)
+        st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
+
 
     if view_type == "Build Your Own!":
         col_plots, col_dates = st.beta_columns(2)
