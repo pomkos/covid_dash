@@ -84,7 +84,7 @@ def dataset_filterer(dataset, col, default_selected=None):
 ### PLOT FUNCTIONS ###
 ######################
 
-def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ols=None):
+def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ols=None,**kwargs):
     '''Plotly plots a scatterplot'''
     if title == None:
         title= f'{str_formatter(y)} vs {str_formatter(x)}'
@@ -98,10 +98,11 @@ def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ol
                          y= y,
                          color=hue,
                          trendline=do_ols,
-                         labels=labels)
+                         labels=labels,
+                         **kwargs)
     return my_plot
 
-def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,title=None):
+def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,title=None,**kwargs):
     '''Plotly plots a lineplot'''
     if title == None:
         title= f'{str_formatter(y)} vs {str_formatter(x)}'
@@ -114,23 +115,25 @@ def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,ti
                       title = title,
                       range_x = date_selected,
                       color=hue,
-                      labels=labels
+                      labels=labels,
+                      **kwargs
                      )
     return my_plot
 
-def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
+def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None,**kwargs):
     '''Plotly plots a barplot'''
     labels = hue_formatter(x,y,hue)
     my_plot = px.bar(
-        data_frame = dataset,
-        x = x,
-        log_x = xlog,
-        y = y,
-        color = hue,
-        log_y = ylog,
-        title = title,
-        barmode = 'group', # group, overlay, relative
-        labels = labels)
+                    data_frame = dataset,
+                    x = x,
+                    log_x = xlog,
+                    y = y,
+                    color = hue,
+                    log_y = ylog,
+                    title = title,
+                    barmode = 'group', # group, overlay, relative
+                    labels = labels
+                    **kwargs)
     return my_plot
 
 ################
@@ -139,7 +142,7 @@ def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
 def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
     
-   
+    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
     if 'Deaths per mill' in plot_selected:
         st.plotly_chart(line_plotter('date',
                                      'new_deaths_smoothed_per_million',
@@ -162,9 +165,9 @@ def premade(premade_df, plot_selected, date_selected):
                                      date_selected,
                                      dataset = premade_df,
                                      hue='location',
-                                     title='Positivity rate by country'),
+                                     title='Positivity rate by country', range_y=(0,0.5)),
                         use_container_width = False)
-        st.info('The W.H.O. recommends a positivity rate of at most 0.05 for two weeks before nations reopen.')
+        st.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
     if 'Hospital vs Deaths' in plot_selected:
         st.plotly_chart(scat_plotter('new_cases_smoothed_per_million',
                                      'hosp_patients_per_million',
@@ -173,7 +176,6 @@ def premade(premade_df, plot_selected, date_selected):
                                      do_ols='ols',
                                      hue='location'), 
                         use_container_width = False)
-    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
     with st.beta_expander('Advanced settings'):
         update = st.button('Update Database')
         if update == True:
