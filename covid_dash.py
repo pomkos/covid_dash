@@ -56,32 +56,44 @@ def col_types(dataset,dtypes):
         col_dict[f'cols_{t}'] = list(df.select_dtypes(t).columns)
     return col_dict
 
+def hue_formatter(x,y,hue):
+    if hue == None:
+        labels = {
+                  x: str_formatter(x),
+                  y: str_formatter(y),
+                  #hue:str_formatter(hue)
+              }
+    else:
+        labels = {
+                  x: str_formatter(x),
+                  y: str_formatter(y),
+                  hue:str_formatter(hue)
+              }
+    return labels
 
 ### PLOT FUNCTIONS ###
 def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ols=None):
     '''Plotly plots a scatterplot'''
     if title == None:
         title= f'{str_formatter(y)} vs {str_formatter(x)}'
+    labels = hue_formatter(x,y,hue)
     my_plot = px.scatter(dataset,
                          x= x,
                          log_x=xlog,
                          log_y=ylog,
                          title=title,
+                         # range_x =,
                          y= y,
                          color=hue,
                          trendline=do_ols,
-                         labels={
-                             x: str_formatter(x),
-                             y: str_formatter(y),
-                             hue:hue
-                           })
+                         labels=labels)
     return my_plot
 
 def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,title=None):
     '''Plotly plots a lineplot'''
-#     if title == None:
-#         title= f'{str_formatter(y)} vs {str_formatter(x)}'
-    st.table(dataset)
+    if title == None:
+        title= f'{str_formatter(y)} vs {str_formatter(x)}'
+    labels = hue_formatter(x,y,hue)
     my_plot = px.line(data_frame=dataset,
                       x= x,
                       log_x = xlog,
@@ -90,15 +102,12 @@ def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,ti
                       title = title,
                       range_x = date_selected,
                       color=hue,
-#                       labels={
-#                           x: str_formatter(x),
-# #                           y: y,
-# #                           color:hue
-#                       }
+                      labels=labels
                      )
     return my_plot
 
 def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
+    labels = hue_formatter(x,y,hue)
     my_plot = px.bar(
         data_frame = dataset,
         x = x,
@@ -108,45 +117,63 @@ def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
         log_y = ylog,
         title = title,
         barmode = 'group', # group, overlay, relative
-        labels = {
-            x: str_formatter(x),
-            y: str_formatter(y)
-        })
+        labels = labels)
     return my_plot
 
 ### VIEWS GUI ###
 def premade(plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
+    premade_df = df[(df['location']=='Hungary') | (df['location']=='United States') | (df['location']=='Brazil') | (df['location']=='India')]
     if 'Deaths per mill' in plot_selected:
         st.plotly_chart(line_plotter('date',
                                      'new_deaths_smoothed_per_million',
                                      date_selected,
+                                     dataset = premade_df,
+                                     hue='location',
                                      title='Deaths per million by country'),
                         use_container_width = False)
     if 'Hosp patients per mill' in plot_selected:
         st.plotly_chart(line_plotter('date',
                                      'hosp_patients_per_million',
                                      date_selected,
+                                     dataset = premade_df,
+                                     hue='location',
                                      title='Hospital patients per million by country'),
                         use_container_width = False)
     if 'Positivity rate' in plot_selected:
         st.plotly_chart(line_plotter('date',
                                      'positive_rate',
                                      date_selected,
+                                     dataset = premade_df,
+                                     hue='location',
                                      title='Positivity rate by country'),
                         use_container_width = False)
     if 'Hospital vs Deaths' in plot_selected:
-        st.plotly_chart(scat_plotter('new_cases_per_million',
+        st.plotly_chart(scat_plotter('new_cases_smoothed_per_million',
                                      'hosp_patients_per_million',
-                                     title='Hospital patients related to new cases'), 
+                                     dataset = premade_df,
+                                     title='Hospital patients related to new cases',
+                                     do_ols='ols',
+                                     hue='location'), 
                         use_container_width = False)
         
     update = st.button('Update Database')
     if update == True:
         import update_covid_db as ucd
-        result = ucd.app()
-        st.success(result)
+        with st.spinner('Beaming the bytes  ...'):
+            result = ucd.app()
+            st.success(result)
 
+def dataset_filterer(dataset, col, default_selected=None):
+        options = list(dataset[col].unique())
+        options.sort()
+        chosen = st.multiselect(f'Select {col}s',
+                              options,
+                              default = default_selected
+                             )
+        new_df = dataset[dataset[col].isin(chosen)]
+        return new_df
+            
 def build_own(x_options,y_options,hue_options,date_selected):
     '''Presents options for user to make own graph, then calls line_plotter()'''
     # webgui
@@ -162,15 +189,29 @@ def build_own(x_options,y_options,hue_options,date_selected):
     with col_hue:
         hue_default = find_default(hue_options,'location')
         hue = st.selectbox('Group by',hue_options, format_func = str_formatter, index=hue_default)
-  
-    st.plotly_chart(line_plotter(x,y,date_selected,hue=hue,xlog=xlog,ylog=ylog))
+
+    if hue.lower() == 'location':
+        default_selected = ['Canada','Hungary','United States']
+    
+    elif hue.lower() == 'continent':
+        default_selected = ['North America',
+                            'Asia',
+                            'Africa',
+                            'Europe',
+                            'South America',
+                            'Oceania']
+    else:
+        default_selected = None
+    byo_df = dataset_filterer(df, hue, default_selected=default_selected)
+
+    st.plotly_chart(line_plotter(x,y,date_selected,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
 
 def view_dataset(dataset, columns=None):
     '''View the dataset, certain or all columns'''
     if columns == None:
         columns = ['All'] + list(dataset.columns)
     columns.sort()
-    with st.beta_expander('Settings',expanded=False):
+    with st.beta_expander('Settings',expanded=True):
         column_choices = st.multiselect('Select variables',
                                         columns,
                                         default = ['location','date','new_cases_per_million', 
@@ -251,7 +292,7 @@ def view_dataset(dataset, columns=None):
             st.success(f'Grouped each of {[str_formatter(x) for x in group_choices]} by {group_desc}!')
         st.table(show_df.head())
         
-    if "graph" in graph_me.lower():       
+    if "graph" in graph_me.lower():
         y_options = list(show_df.columns)
         show_df = show_df.reset_index()
         x_options = y_options
@@ -301,7 +342,7 @@ def app():
             plot_selected = st.selectbox('Select a plot',options,index=2)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
-        st.write('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset.')
+        st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
         premade(plot_selected, date_selected)
 
     if view_type == "Build Your Own!":
