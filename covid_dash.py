@@ -136,9 +136,10 @@ def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None):
 ################
 ### MAIN APP ###
 ################
-def premade(plot_selected, date_selected):
+def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
-    premade_df = df[(df['location']=='Hungary') | (df['location']=='United States') | (df['location']=='Brazil') | (df['location']=='India')]
+    
+   
     if 'Deaths per mill' in plot_selected:
         st.plotly_chart(line_plotter('date',
                                      'new_deaths_smoothed_per_million',
@@ -163,6 +164,7 @@ def premade(plot_selected, date_selected):
                                      hue='location',
                                      title='Positivity rate by country'),
                         use_container_width = False)
+        st.info('A positivity rate of 0.2 is recommended as the goal by the W.H.O. for each nation.')
     if 'Hospital vs Deaths' in plot_selected:
         st.plotly_chart(scat_plotter('new_cases_smoothed_per_million',
                                      'hosp_patients_per_million',
@@ -212,8 +214,7 @@ def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot')
     
     if plt_type.lower() == 'lineplot':
         st.plotly_chart(line_plotter(x,y,date_selected,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
-    elif plt_type.lower() == 'scatterplot':
-        
+    elif plt_type.lower() == 'scatterplot':        
         st.plotly_chart(scat_plotter(x,y,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
     else:
         st.plotly_chart(bar_plotter(x,y,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
@@ -355,15 +356,17 @@ def app():
         st.info('Not implemented (yet)')
         st.stop()
     view_type = st.select_slider("",options=('Premade Plots','Build Your Own!','Dataset'))
+    
     if view_type == "Premade Plots":
         col_sel, col_date = st.beta_columns(2)
         with col_sel:
             options = ['Deaths per mill','Hosp patients per mill','Hospital vs Deaths','Positivity rate']
-            plot_selected = st.selectbox('Select a plot',options,index=2)        
+            plot_selected = st.selectbox('Select a plot',options,index=3)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
+        premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
         st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
-        premade(plot_selected, date_selected)
+        premade(premade_df, plot_selected, date_selected)
 
     if view_type == "Build Your Own!":
         col_plots, col_dates = st.beta_columns(2)
