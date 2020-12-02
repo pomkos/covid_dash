@@ -11,6 +11,8 @@ import plotly.express as px # plots
 import sqlalchemy as sq # sql
 import os # current directory
 
+import base64
+
 ###############
 ## Load data ##
 ###############
@@ -79,6 +81,13 @@ def dataset_filterer(dataset, col, default_selected=None):
                          )
     new_df = dataset[dataset[col].isin(chosen)]
     return new_df
+
+def file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download</a>'
+    return href
 
 ######################
 ### PLOT FUNCTIONS ###
@@ -176,13 +185,6 @@ def premade(premade_df, plot_selected, date_selected):
                                      do_ols='ols',
                                      hue='location'), 
                         use_container_width = False)
-    with st.beta_expander('Advanced settings'):
-        update = st.button('Update Database')
-        if update == True:
-            import update_covid_db as ucd
-            with st.spinner('Beaming the bytes  ...'):
-                result = ucd.app()
-                st.success(result)
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls the appropriate plotter()'''
@@ -389,5 +391,17 @@ def app():
         
     if view_type == "Dataset":
         view_dataset(df)
+    with st.beta_expander('Advanced settings'):
+        update = st.button('Update Database')            
+        if update == True:
+            import update_covid_db as ucd
+            with st.spinner('Gathering the latest data ...'):
+                result = ucd.app()
+                st.success(result)
+        download = st.button('Download Dataset')
+        if download == True:
+            with st.spinner('Saving dataset ...'):
+                premade_df.to_excel('data/covid_dataset.xlsx',index=False)
+                st.markdown(file_downloader_html('data/covid_dataset.xlsx', 'Dataset'), unsafe_allow_html=True)
 
 app()
