@@ -370,7 +370,11 @@ def app():
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
         premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
         premade(premade_df, plot_selected, date_selected)
+        ############### TESTING AREA ###############
+        import map_maker
+        map_maker.app()
 
+        ###########################################
 
     if view_type == "Build Your Own!":
         col_plots, col_dates = st.beta_columns(2)
