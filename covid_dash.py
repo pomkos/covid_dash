@@ -396,13 +396,16 @@ def app():
     if view_type == "Dataset":
         view_dataset(df)
     with st.beta_expander('Advanced settings'):
-        update = st.button('Update Database')            
+        col_up, col_down = st.beta_columns([0.28,1])
+        with col_up:
+            update = st.button('Update Database')            
         if update == True:
             import update_covid_db as ucd
             with st.spinner('Gathering the latest data ...'):
                 result = ucd.app()
                 st.success(result)
-        download = st.button('Download Dataset')
+        with col_down:
+            download = st.button('Download Dataset')
         if download == True:
             with st.spinner('Saving dataset ...'):
                 premade_df.to_excel('data/covid_dataset.xlsx',index=False)
