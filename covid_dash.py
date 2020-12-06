@@ -12,23 +12,28 @@ import sqlalchemy as sq # sql
 import os # current directory
 
 import base64
+import sys # for script args
+
+us_pw = sys.argv[1]  # user input: "my_user:password"
+db_ip = sys.argv[2]  # user input: 192.168.1.11
+port = sys.argv[3]   # user input: 5432
+
 
 ###############
 ## Load data ##
 ###############
 
 parent = os.path.dirname(os.getcwd()) # get parent of current directory
-#########################################################################
-engine = sq.create_engine(f'sqlite:///data/covid.db')
-#########################################################################
+# connect to db
+engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
 cnx = engine.connect()
 meta = sq.MetaData()
-
-raw_request = '''
-SELECT *
-FROM covid_world
-'''
-
+# get all schemas
+meta.reflect(bind=engine)
+# select schema
+table = meta.tables['covid_world']
+# retreive table
+raw_request = sq.select([table])
 ResultSet = cnx.execute(raw_request).fetchall()
 df=pd.DataFrame(ResultSet)
 df.columns=ResultSet[0].keys()
