@@ -382,7 +382,6 @@ def app():
             plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
-            st.write(date_selected)
         premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
         premade(premade_df, plot_selected, date_selected)
         ############### TESTING AREA ###############
