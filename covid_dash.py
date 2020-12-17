@@ -14,9 +14,9 @@ import os # current directory
 import base64
 import sys # for script args
 
-us_pw = sys.argv[1]  # user input: "my_user:password"
-db_ip = sys.argv[2]  # user input: 192.168.1.11
-port = sys.argv[3]   # user input: 5432
+# us_pw = sys.argv[1]  # user input: "my_user:password"
+# db_ip = sys.argv[2]  # user input: 192.168.1.11
+# port = sys.argv[3]   # user input: 5432
 
 
 ###############
@@ -25,7 +25,8 @@ port = sys.argv[3]   # user input: 5432
 
 parent = os.path.dirname(os.getcwd()) # get parent of current directory
 # connect to db
-engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
+#engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
+engine = sq.create_engine('postgres://postgres:helllo@192.168.1.240:5432')
 cnx = engine.connect()
 meta = sq.MetaData()
 # get all schemas
@@ -164,6 +165,14 @@ def premade(premade_df, plot_selected, date_selected):
                                      dataset = premade_df,
                                      hue='location',
                                      title='Deaths per million by country'),
+                        use_container_width = False)
+    if 'Cases per mill' in plot_selected:
+        st.plotly_chart(line_plotter('date',
+                                     'new_cases_smoothed_per_million',
+                                     date_selected,
+                                     dataset = premade_df,
+                                     hue='location',
+                                     title='Cases per million by country'),
                         use_container_width = False)
     if 'Hosp patients per mill' in plot_selected:
         st.plotly_chart(line_plotter('date',
@@ -369,10 +378,11 @@ def app():
     if view_type == "Premade Plots":
         col_sel, col_date = st.beta_columns(2)
         with col_sel:
-            options = ['Deaths per mill','Hosp patients per mill','Hospital vs Deaths','Positivity rate']
-            plot_selected = st.selectbox('Select a plot',options,index=3)        
+            options = ['Cases per mill','Deaths per mill','Hosp patients per mill','Hospital vs Deaths','Positivity rate']
+            plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
+            st.write(date_selected)
         premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
         premade(premade_df, plot_selected, date_selected)
         ############### TESTING AREA ###############
