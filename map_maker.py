@@ -1,39 +1,8 @@
 import pycountry
-import sqlalchemy as sq
-import sqlalchemy.orm as sqo
 import streamlit as st
 import pandas as pd
 
 st.title('Confirmed Covid Cases in 2020')
-
-###############
-## Load metadata ##
-###############
-
-# connect to db
-engine = sq.create_engine('postgres://postgres:helllo@192.168.1.240:5432')
-cnx = engine.connect()
-meta = sq.MetaData()
-# get all schemas
-meta.reflect(bind=engine)
-# select schema
-table = meta.tables['wide_world_time']
-# retreive columns
-all_columns = table.columns.keys()
-all_columns.sort()
-
-# create session
-Session = sqo.sessionmaker(bind=engine)
-session=Session()
-
-def sql_orm_requester(columns):
-    '''
-    Created to standardize grabbing columns of interest from sql table.
-    Returns sqlorm query results
-    '''
-    colspec = [getattr(table.c,col) for col in columns]
-    ResultSet = session.query(*colspec)
-    return ResultSet
 
 def get_country_code(name):
     'Get the three-letter country codes for each country'
@@ -48,7 +17,7 @@ class covidMapper():
         Maps covid data using plotly chloropleth (mom wrote it!)
         '''
         if start == True:
-            df_confirm = pd.DataFrame(sql_orm_requester(all_columns))        
+            df_confirm = pd.read_csv('data/time_series_covid19_confirmed_global.csv')        
             df_confirm = df_confirm.drop(columns=['Province/State','Lat', 'Long'])
             df_confirm = df_confirm.groupby('Country/Region').agg('sum')
             date_list = list(df_confirm.columns)
