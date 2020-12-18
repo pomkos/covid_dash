@@ -401,7 +401,8 @@ def app():
         ##### Retrieve #####
         
         columns = ['location','date','hosp_patients_per_million',
-                   'new_cases_smoothed_per_million','new_deaths_smoothed_per_million']
+                   'new_cases_smoothed_per_million','new_deaths_smoothed_per_million',
+                   'positive_rate']
 
         my_df=pd.DataFrame(sql_orm_requester(columns))
         my_df['date'] = pd.to_datetime(my_df['date'])
