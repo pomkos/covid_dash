@@ -39,7 +39,7 @@ all_columns = table.columns.keys()
 all_columns.sort()
 
 # create session
-Session = sqo.sessionmake(bind=engine)
+Session = sqo.sessionmaker(bind=engine)
 session=Session()
 
 ########################
