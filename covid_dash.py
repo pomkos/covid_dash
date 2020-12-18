@@ -107,7 +107,7 @@ def sql_orm_requester(columns):
 ### PLOT FUNCTIONS ###
 ######################
 
-def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ols=None,**kwargs):
+def scat_plotter(x,y,dataset,hue=None,xlog=False,ylog=False,title=None, do_ols=None,**kwargs):
     '''Plotly plots a scatterplot'''
     if title == None:
         title= f'{str_formatter(y)} vs {str_formatter(x)}'
@@ -125,7 +125,7 @@ def scat_plotter(x,y,dataset=df,hue=None,xlog=False,ylog=False,title=None, do_ol
                          **kwargs)
     return my_plot
 
-def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,title=None,**kwargs):
+def line_plotter(x,y,date_selected, dataset,hue=None,xlog=False,ylog=False,title=None,**kwargs):
     '''Plotly plots a lineplot'''
     if title == None:
         title= f'{str_formatter(y)} vs {str_formatter(x)}'
@@ -143,7 +143,7 @@ def line_plotter(x,y,date_selected, dataset=df,hue=None,xlog=False,ylog=False,ti
                      )
     return my_plot
 
-def bar_plotter(x, y,dataset=df, hue=None,xlog=False,ylog=False,title=None,**kwargs):
+def bar_plotter(x, y,dataset, hue=None,xlog=False,ylog=False,title=None,**kwargs):
     '''Plotly plots a barplot'''
     labels = hue_formatter(x,y,hue)
     my_plot = px.bar(
@@ -432,7 +432,8 @@ def app():
         build_own(x_options,y_options,hue_options,date_selected, plt_type)
         
     if view_type == "Dataset":
-        view_dataset(df)
+        st.write('to be implemented')
+        # view_dataset(df)
     with st.beta_expander('Advanced settings'):
         col_up, col_down = st.beta_columns([0.28,1])
         with col_up:
