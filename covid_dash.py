@@ -9,18 +9,19 @@ import datetime as dt # date
 import plotly.express as px # plots
 
 import sqlalchemy as sq # sql
+import sqlalchemy.orm as sqo # dynamically select columns
 import os # current directory
 
 import base64
 import sys # for script args
 
-# us_pw = sys.argv[1]  # user input: "my_user:password"
-# db_ip = sys.argv[2]  # user input: 192.168.1.11
-# port = sys.argv[3]   # user input: 5432
+us_pw = sys.argv[1]  # user input: "my_user:password"
+db_ip = sys.argv[2]  # user input: 192.168.1.11
+port = sys.argv[3]   # user input: 5432
 
 
 ###############
-## Load data ##
+## Load metadata ##
 ###############
 
 parent = os.path.dirname(os.getcwd()) # get parent of current directory
@@ -33,15 +34,13 @@ meta = sq.MetaData()
 meta.reflect(bind=engine)
 # select schema
 table = meta.tables['covid_world']
-# retreive table
-raw_request = sq.select([table])
-ResultSet = cnx.execute(raw_request).fetchall()
-df=pd.DataFrame(ResultSet)
-df.columns=ResultSet[0].keys()
-df['date'] = pd.to_datetime(df['date'])
-cols = list(df.columns)
-cols.sort()
-df = df[cols]
+# retreive columns
+all_columns = table.columns.keys()
+all_columns.sort()
+
+# create session
+Session = sqo.sessionmake(bind=engine)
+session=Session()
 
 ########################
 ### HELPER FUNCTIONS ###
@@ -94,6 +93,15 @@ def file_downloader_html(bin_file, file_label='File'):
     bin_str = base64.b64encode(data).decode()
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">Download</a>'
     return href
+
+def sql_orm_requester(columns):
+    '''
+    Created to standardize grabbing columns of interest from sql table.
+    Returns sqlorm query results
+    '''
+    colspec = [getattr(table.c,col) for col in columns]
+    ResultSet = session.query(*colspec)
+    return ResultSet
 
 ######################
 ### PLOT FUNCTIONS ###
@@ -203,6 +211,8 @@ def premade(premade_df, plot_selected, date_selected):
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls the appropriate plotter()'''
     # webgui
+    
+    my_cols = []
     col_x, col_y, col_hue = st.beta_columns(3)
     with col_x:
         x_default = find_default(x_options,'date')
@@ -229,6 +239,11 @@ def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot')
     else:
         default_selected = None
         
+    my_cols.append(x)
+    my_cols.append(y)
+    my_cols.append(hue)
+    
+    df = pd.DataFrame(sql_orm_requester(my_cols))
     byo_df = dataset_filterer(df, hue, default_selected=default_selected)
     
     if plt_type.lower() == 'lineplot':
@@ -382,12 +397,21 @@ def app():
             plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
-        premade_df = dataset_filterer(df, 'location',default_selected = ['Hungary','United States'])
+            
+        ##### Retrieve #####
+        
+        columns = ['location','date','hosp_patients_per_million',
+                   'new_cases_smoothed_per_million','new_deaths_smoothed_per_million']
+
+        my_df=pd.DataFrame(sql_orm_requester(columns))
+        my_df['date'] = pd.to_datetime(my_df['date'])
+        
+        premade_df = dataset_filterer(my_df, 'location',default_selected = ['Hungary','United States'])
         premade(premade_df, plot_selected, date_selected)
+        
         ############### TESTING AREA ###############
         import map_maker
         map_maker.app()
-
         ###########################################
 
     if view_type == "Build Your Own!":
@@ -401,9 +425,9 @@ def app():
         y_options = []
         hue_options = []
 
-        x_options += list(df.select_dtypes(include=[np.datetime64,float,int]).columns)
-        y_options += list(df.select_dtypes(include=[float,int]).columns)
-        hue_options += list(df.select_dtypes(include=[object, 'category']).columns)
+        x_options += all_columns
+        y_options += all_columns
+        hue_options += all_columns
 
         build_own(x_options,y_options,hue_options,date_selected, plt_type)
         
