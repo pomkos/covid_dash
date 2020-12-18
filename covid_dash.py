@@ -290,6 +290,7 @@ def view_dataset(columns=None):
         with col_date_df:
             date_range_choices = st.date_input('Change the dates?', value=(dt.datetime(2020,1,1),dt.datetime.now()),key='chg_dts_df')
             show_df = dataset[column_choices]
+            show_df['date'] = pd.to_datetime(show_df['date'])
             show_df = show_df[(show_df['date']>=pd.to_datetime(date_range_choices[0])) & 
                               (show_df['date']<=pd.to_datetime(date_range_choices[1]))]
         with col_group:
