@@ -16,7 +16,7 @@ meta = sq.MetaData()
 # get all schemas
 meta.reflect(bind=engine)
 # select schema
-table = meta.tables['world_wide_time']
+table = meta.tables['wide_world_time']
 # retreive columns
 all_columns = table.columns.keys()
 all_columns.sort()
