@@ -253,11 +253,11 @@ def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot')
     else:
         st.plotly_chart(bar_plotter(x,y,dataset=byo_df,hue=hue,xlog=xlog,ylog=ylog))
 
-def view_dataset(dataset, columns=None):
+def view_dataset(columns=None):
     '''View the dataset, certain or all columns'''
     if columns == None:
-        columns = ['All'] + list(dataset.columns)
-    columns.sort()
+        columns = ['All'] + all_columns
+
     with st.beta_expander('Settings',expanded=True):
         column_choices = st.multiselect('Select variables',
                                         columns,
@@ -265,6 +265,8 @@ def view_dataset(dataset, columns=None):
                                                    'new_deaths_per_million', 'population',
                                                    'population_density'],
                                         format_func=str_formatter)
+        dataset = pd.DataFrame(sql_orm_requester(column_choices))
+        
         if 'date' not in column_choices:
             st.error('As the dataset is in the time domain, "Date" must be passed')
             st.stop()
@@ -281,7 +283,7 @@ def view_dataset(dataset, columns=None):
             dataset = dataset[dataset['location'].isin(ctry_choices)] # filter column to just selected countries
             
         if 'All' in column_choices:
-            column_choices = list(dataset.columns)
+            column_choices = all_columns
             
         col_date_df, col_group,col_grp_desc = st.beta_columns(3)
 
@@ -434,7 +436,7 @@ def app():
         
     if view_type == "Dataset":
         st.write('to be implemented')
-        # view_dataset(df)
+        view_dataset()
     with st.beta_expander('Advanced settings'):
         col_up, col_down = st.beta_columns([0.28,1])
         with col_up:
