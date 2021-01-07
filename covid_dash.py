@@ -24,10 +24,9 @@ port = sys.argv[3]   # user input: 5432
 ## Load metadata ##
 ###############
 
-parent = os.path.dirname(os.getcwd()) # get parent of current directory
 # connect to db
 #engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
-engine = sq.create_engine('postgres://postgres:helllo@192.168.1.240:5432')
+engine = sq.create_engine('sqlite:///data/covid_db.sqlite')
 cnx = engine.connect()
 meta = sq.MetaData()
 # get all schemas
@@ -399,7 +398,7 @@ def app():
             options = ['Cases per mill','Deaths per mill','Hosp patients per mill','Hospital vs Deaths','Positivity rate']
             plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
-            date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,7,1),dt.datetime.now()))
+            date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,3,1),dt.datetime.now()))
             
         ##### Retrieve #####
         
