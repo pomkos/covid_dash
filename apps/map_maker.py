@@ -2,8 +2,6 @@ import pycountry
 import streamlit as st
 import pandas as pd
 
-st.title('Confirmed Covid Cases in 2020')
-
 def get_country_code(name):
     'Get the three-letter country codes for each country'
     try:
@@ -48,6 +46,7 @@ class covidMapper():
     
     
 def app():
+    st.title('Confirmed Covid Cases in 2020')
     data_map = covidMapper(start=True)
     my_map = data_map.map_creator()
     st.plotly_chart(my_map)
