@@ -26,4 +26,4 @@ def app():
 
     print("everything saved!")
     return f'New data saved to the database today ({dt.datetime.now()}!)'
-app()
+
