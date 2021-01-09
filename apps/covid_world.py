@@ -269,7 +269,9 @@ def app():
             plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,3,1),dt.datetime.now()))
-            
+        if len(date_selected) != 2:
+            st.info("Select a beginning and end date")
+            st.stop()
         ##### Retrieve #####
         
         columns = ['location','date','hosp_patients_per_million',
@@ -279,14 +281,9 @@ def app():
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
         
-        premade_df = h.dataset_filterer(my_df, 'location',default_selected = ['Hungary','United States'])
+        premade_df = h.dataset_filterer(my_df, 'location',default_selected = ['Hungary','Mexico','United States'])
         premade(premade_df, plot_selected, date_selected)
         
-        ############### TESTING AREA ###############
-        from apps import map_maker
-        map_maker.app()
-        ###########################################
-
     if view_type == "Build Your Own!":
         col_plots, col_dates = st.beta_columns(2)
         
@@ -307,18 +304,3 @@ def app():
     if view_type == "Dataset":
         st.write('to be implemented')
         view_dataset()
-    with st.beta_expander('Advanced settings'):
-        col_up, col_down = st.beta_columns([0.28,1])
-        with col_up:
-            update = st.button('Update Database')            
-        if update == True:
-            import update_covid_db as ucd
-            with st.spinner('Gathering the latest data ...'):
-                result = ucd.app()
-                st.success(result)
-        with col_down:
-            download = st.button('Download Dataset')
-        if download == True:
-            with st.spinner('Saving dataset ...'):
-                premade_df.to_excel('data/covid_dataset.xlsx',index=False)
-                st.markdown(h.file_downloader_html('data/covid_dataset.xlsx', 'Dataset'), unsafe_allow_html=True)
