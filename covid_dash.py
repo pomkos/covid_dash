@@ -15,12 +15,13 @@ st.set_page_config(page_title = "Covid Dash")
 
 def app():
     '''Bulk of webgui, calls relevant functions'''
-    data_choice = st.sidebar.radio('',['USA Data','World Data','Animations'],index=1)
+    data_choice = st.sidebar.radio('',['USA Data','World Data','Animations'],index=0)
         
     if 'usa' in data_choice.lower():
         st.title('Covid Dash')
-        st.info('Not implemented (yet)')
-        st.stop()
+        from apps import covid_usa
+        covid_usa.app()
+        
     elif 'animations' in data_choice.lower():
         ############### TESTING AREA ###############
         from apps import map_maker
@@ -30,7 +31,7 @@ def app():
         st.title('Covid Dash')
         from apps import covid_world
         covid_world.app()
-        
+    st.stop() # temporarily@###############################################
     with st.beta_expander('Advanced settings'):
         # Settings to update or download the datasets
         col_up, col_down = st.beta_columns([0.29,1])
