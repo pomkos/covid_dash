@@ -100,6 +100,7 @@ def line_plotter(x,y,date_selected, dataset,hue=None,xlog=False,ylog=False,title
                       labels=labels,
                       **kwargs
                      )
+    my_plot.update_layout(hovermode='x')
     return my_plot
 
 def bar_plotter(x, y,dataset, hue=None,xlog=False,ylog=False,title=None,**kwargs):
