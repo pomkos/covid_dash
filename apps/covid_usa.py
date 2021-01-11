@@ -107,6 +107,6 @@ def app():
     premade_df = h.dataset_filterer(my_df, 'state',default_selected = ['OH','TX','FL'])
 
     premade(premade_df, plot_selected, date_selected)
-
+    session.close()
     ######################################
 

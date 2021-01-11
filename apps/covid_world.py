@@ -304,3 +304,4 @@ def app():
     if view_type == "Dataset":
         st.write('to be implemented')
         view_dataset()
+    session.close()
