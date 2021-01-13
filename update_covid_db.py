@@ -15,6 +15,7 @@ def app():
     world_df = pd.read_csv('https://covid.ourworldindata.org/data/owid-covid-data.csv')
     world_df['deaths_per_pos'] = world_df['new_deaths']/world_df['new_cases']
     world_df['pos_per_tests'] = world_df['new_cases']/world_df['new_tests']
+    world_df['rolling_pos_per_tests'] = world_df['pos_per_tests'].rolling(7).mean()
     
     engine = sq.create_engine(f'sqlite:///data/covid_db.sqlite')
     print("connecting")
