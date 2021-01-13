@@ -276,7 +276,7 @@ def app():
         
         columns = ['location','date','hosp_patients_per_million',
                    'new_cases_smoothed_per_million','new_deaths_smoothed_per_million',
-                   'positive_rate']
+                   'pos_per_tests']
 
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
