@@ -68,7 +68,7 @@ def premade(premade_df, plot_selected, date_selected):
                         use_container_width = False)
     if 'Positivity rate' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
-                                     'positive_rate',
+                                     'pos_per_tests',
                                      date_selected,
                                      dataset = premade_df,
                                      hue='location',
