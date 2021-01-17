@@ -8,7 +8,7 @@ def get_country_code(name):
         return pycountry.countries.lookup(name).alpha_3
     except:
         return None
-
+@st.cache    
 class covidMapper():
     def __init__(self,start=False):
         '''
@@ -43,12 +43,13 @@ class covidMapper():
                      range_color=[0,50000]              # select range of dataset
                      )        
         return my_map
-    
-    
+def cache_the_map(): # I dont think this works ...
+    data_map = covidMapper(start=True)
+    return data_map.map_creator()
+
 def app():
     st.title('Confirmed Covid Cases in 2020')
-    data_map = covidMapper(start=True)
-    my_map = data_map.map_creator()
+    my_map = cache_the_map()
     st.plotly_chart(my_map)
     
     
