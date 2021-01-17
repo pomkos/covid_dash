@@ -38,6 +38,8 @@ def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
     
     st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
+    ylog = st.checkbox('log(y axis)')
+
     if 'Change in Cases' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
                                      'positiveIncrease',
@@ -45,7 +47,8 @@ def premade(premade_df, plot_selected, date_selected):
                                      dataset = premade_df,
                                      hue='state',
                                      title='Change in cases by state'),
-                        use_container_width = False)
+                                     ylog=ylog,
+                        use_container_width = False,)
     if 'Change in Deaths' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
                                      'deathIncrease',
@@ -53,6 +56,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      dataset = premade_df,
                                      hue='state',
                                      title='Change in deaths by state'),
+                                     ylog=ylog,
                         use_container_width = False)
     if 'Hospitalized' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -61,6 +65,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      dataset = premade_df,
                                      hue='state',
                                      title='Currently hospitalized patients by state'),
+                                     ylog=ylog,
                         use_container_width = False)
     if 'Positivity Rate' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -104,9 +109,8 @@ def app():
     my_df = pd.DataFrame(resultset)
     my_df['date'] = pd.to_datetime(my_df['date'])
 
-    premade_df = h.dataset_filterer(my_df, 'state',default_selected = ['OH','TX','FL'])
+    premade_df = h.dataset_filterer(my_df, 'state', default_selected = ['OH','TX','FL'])
 
     premade(premade_df, plot_selected, date_selected)
     session.close()
-    ######################################
 

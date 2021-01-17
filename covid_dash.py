@@ -31,7 +31,9 @@ def app():
         st.title('Covid Dash')
         from apps import covid_world
         covid_world.app()
-    st.stop() # temporarily@###############################################
+
+    ### Temporarily Removed Advanced Setting ###
+    st.stop()
     with st.beta_expander('Advanced settings'):
         # Settings to update or download the datasets
         col_up, col_down = st.beta_columns([0.29,1])
