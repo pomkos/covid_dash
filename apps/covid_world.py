@@ -154,15 +154,7 @@ def app():
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
         
-        continent = list(my_df['continent'].unique())
-        
-        
-        col_cont, col_loc = st.beta_columns(2)
-        
-        with col_cont:
-            premade_df = h.dataset_filterer(my_df, 'continent', default_selected = continent)
-        with col_loc:
-            premade_df = h.dataset_filterer(premade_df, 'location', default_selected = ['European Union','United States'])
+        premade_df = h.dataset_filterer(my_df, 'location', default_selected = ['Canada', 'Hungary', 'Mexico','United States'])
         
         premade(premade_df, plot_selected, date_selected)
         

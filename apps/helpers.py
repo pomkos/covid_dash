@@ -38,6 +38,8 @@ def dataset_filterer(dataset, col, default_selected=None):
     Returns the dataset filtered by user's choice of unique values from given column
     '''
     options = list(dataset[col].unique())
+    if col == 'continent':
+        options.remove(None)
     options.sort()
     chosen = st.multiselect(f'Select {col}s',
                           options,
