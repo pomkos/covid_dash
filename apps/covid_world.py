@@ -155,7 +155,6 @@ def app():
         my_df['date'] = pd.to_datetime(my_df['date'])
         
         continent = list(my_df['continent'].unique())
-        continent.sort()
         
         
         col_cont, col_loc = st.beta_columns(2)
