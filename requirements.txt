@@ -1,9 +1,6 @@
-datetime # datetime formatting and selecting
-numpy # nan and datetime comparison
-pandas # dataset manipulation
-plotly # covid dash
-pytz # timezone specification
-statsmodels # ols regression line in plotly scatterplot
-streamlit # webgui
-sqlalchemy # sqlite db examination
-psycopg2-binary # required for connecting to postgres
+SQLAlchemy==1.3.20
+plotly==4.14.1
+pandas==1.1.3
+numpy==1.19.4
+streamlit==0.73.1
+pycountry==20.7.3

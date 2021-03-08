@@ -106,12 +106,13 @@ def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot')
         default_selected = ['Canada','Hungary','United States']
     
     elif hue.lower() == 'continent':
-        default_selected = ['North America',
+        default_selected = ['Africa'
                             'Asia',
-                            'Africa',
                             'Europe',
-                            'South America',
-                            'Oceania']
+                            'North America',
+                            'Oceania',
+                            'South America'
+                            ]
     else:
         default_selected = None
         
@@ -153,7 +154,7 @@ def app():
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
         
-        premade_df = h.dataset_filterer(my_df, 'location',default_selected = ['Hungary','Mexico','United States'])
+        premade_df = h.dataset_filterer(my_df, 'location',default_selected = ['Asia','Africa','Europe','United States','Hungary',])
         premade(premade_df, plot_selected, date_selected)
         
     if view_type == "Build Your Own!":
