@@ -147,7 +147,7 @@ def app():
             st.stop()
         ##### Retrieve #####
         
-        columns = ['location','date','hosp_patients_per_million',
+        columns = ['location','continent','date','hosp_patients_per_million',
                    'new_cases_smoothed_per_million','new_deaths_smoothed_per_million',
                    'rolling_pos_per_tests']
 
