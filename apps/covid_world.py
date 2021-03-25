@@ -154,8 +154,14 @@ def app():
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
         
-        premade_df = h.dataset_filterer(my_df, 'location', default_selected = ['Canada', 'Hungary', 'Mexico','United States'])
-        
+        if st.checkbox("Hungary and surrounding countries only"):
+            default = ['Hungary','Slovakia','Austria','Slovenia',
+                       'Croatia','Serbia','Romania','Ukraine']
+            default.sort()
+        else:
+            default = ['Canada', 'Hungary', 'Mexico','United States']
+            
+        premade_df = h.dataset_filterer(my_df, 'location', default_selected = default)
         premade(premade_df, plot_selected, date_selected)
         
     if view_type == "Build Your Own!":
