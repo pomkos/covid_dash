@@ -24,8 +24,9 @@ footer {visibility: hidden;}
 </script>
 
 """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True) # hides the hamburger menu
 st.set_page_config(page_title = "Covid Dash")
+
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) # hides the hamburger menu
 
 def app():
     '''Bulk of webgui, calls relevant functions'''
