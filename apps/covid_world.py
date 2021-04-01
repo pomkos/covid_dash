@@ -74,14 +74,6 @@ def premade(premade_df, plot_selected, date_selected):
                                      title='Positivity rate by location', range_y=(0,0.5)),
                         use_container_width = False)
         st.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
-    if 'Hospital vs Deaths' in plot_selected:
-        st.plotly_chart(h.scat_plotter('new_cases_smoothed_per_million',
-                                     'hosp_patients_per_million',
-                                     dataset = premade_df,
-                                     title='Hospital patients related to new cases',
-                                     do_ols='ols',
-                                     hue='location'), 
-                        use_container_width = False)
     st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
@@ -138,7 +130,7 @@ def app():
     if view_type == "Premade Plots":
         col_sel, col_date = st.beta_columns(2)
         with col_sel:
-            options = ['Cases per mill','Deaths per mill','Hosp patients per mill','Hospital vs Deaths','Positivity rate']
+            options = ['Cases per mill','Deaths per mill','Hosp patients per mill','Positivity rate']
             plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,3,1),dt.datetime.now()))
