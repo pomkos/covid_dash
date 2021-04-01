@@ -41,14 +41,13 @@ session=Session()
 def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
     
-    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
     if 'Deaths per mill' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
                                      'new_deaths_smoothed_per_million',
                                      date_selected,
                                      dataset = premade_df,
                                      hue='location',
-                                     title='Deaths per million by country'),
+                                     title='Deaths per million by location'),
                         use_container_width = False)
     if 'Cases per mill' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -56,7 +55,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      date_selected,
                                      dataset = premade_df,
                                      hue='location',
-                                     title='Cases per million by country'),
+                                     title='Cases per million by location'),
                         use_container_width = False)
     if 'Hosp patients per mill' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -64,7 +63,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      date_selected,
                                      dataset = premade_df,
                                      hue='location',
-                                     title='Hospital patients per million by country'),
+                                     title='Hospital patients per million by location'),
                         use_container_width = False)
     if 'Positivity rate' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -72,7 +71,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      date_selected,
                                      dataset = premade_df,
                                      hue='location',
-                                     title='Positivity rate by country', range_y=(0,0.5)),
+                                     title='Positivity rate by location', range_y=(0,0.5)),
                         use_container_width = False)
         st.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
     if 'Hospital vs Deaths' in plot_selected:
@@ -83,6 +82,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      do_ols='ols',
                                      hue='location'), 
                         use_container_width = False)
+    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls the appropriate plotter()'''
@@ -154,13 +154,33 @@ def app():
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
         
-        if st.checkbox("Hungary and surrounding countries only"):
+        col_we, col_ee, col_am = st.beta_columns(3)
+        #st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+        st.sidebar.write("-----------------")
+        region = st.sidebar.radio("Preset locations", options = ['Default', 'North America', 'West Europe', 
+                                                       'East Europe', 'Nordics', 'Continents'], index=0)
+        
+        if region == "North America":
+            default = ['Canada','United States', 'Mexico']
+            
+        elif region == 'Nordics':
+            default = ['Sweden','Finland','Norway']
+            
+        elif region == "West Europe":
+            default = ['Austria','Belgium','France','Germany','Spain',
+                       'United Kingdom','Portugal','Netherlands','Switzerland']
+            
+        elif region == "East Europe":
             default = ['Hungary','Slovakia','Austria','Slovenia',
                        'Croatia','Serbia','Romania','Ukraine']
-            default.sort()
+        
+        elif region == 'Continents':
+            default = ['Europe','North America', 'South America', 'Africa', 'Asia', 'Australia']
+        
         else:
-            default = ['Canada', 'Hungary', 'Mexico','United States']
-            
+            default = ['Canada', 'Hungary','United States']
+        default.sort()
+        
         premade_df = h.dataset_filterer(my_df, 'location', default_selected = default)
         premade(premade_df, plot_selected, date_selected)
         
