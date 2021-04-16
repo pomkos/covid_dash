@@ -82,7 +82,6 @@ def scat_plotter(x,y,dataset,hue=None,xlog=False,ylog=False,title=None, do_ols=N
                          y= y,
                          color=hue,
                          trendline=do_ols,
-                         labels=labels,
                          **kwargs)
     return my_plot
 
@@ -99,7 +98,6 @@ def line_plotter(x,y,date_selected, dataset,hue=None,xlog=False,ylog=False,title
                       title = title,
                       range_x = date_selected,
                       color=hue,
-                      labels=labels,
                       **kwargs
                      )
     my_plot.update_layout(hovermode='x')
@@ -117,6 +115,5 @@ def bar_plotter(x, y,dataset, hue=None,xlog=False,ylog=False,title=None,**kwargs
                     log_y = ylog,
                     title = title,
                     barmode = 'group', # group, overlay, relative
-                    labels = labels
                     **kwargs)
     return my_plot

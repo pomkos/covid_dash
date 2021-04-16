@@ -42,51 +42,38 @@ def premade(premade_df, plot_selected, date_selected):
 
     if 'Change in Cases' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
-                                     'positiveIncrease',
+                                     'weekly_rolling_new_cases',
                                      date_selected,
                                      dataset = premade_df,
                                      hue='state',
-                                     title='Change in cases by state'),
                                      ylog=ylog,
+                                     labels={'weekly_rolling_new_cases':'Weekly new cases',
+                                             'date':''},
+                                     title='Change in mean weekly cases by state'),
                         use_container_width = False,)
     if 'Change in Deaths' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
-                                     'deathIncrease',
+                                     'weekly_rolling_new_deaths',
                                      date_selected,
                                      dataset = premade_df,
                                      hue='state',
-                                     title='Change in deaths by state'),
                                      ylog=ylog,
+                                     labels={'weekly_rolling_new_deaths':'Weekly new deaths',
+                                             'date':''},
+                                     title='Change in mean weekly deaths by state'),
                         use_container_width = False)
-    if 'Hospitalized' in plot_selected:
+    if 'Total Cases' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
-                                     'hospitalizedCurrently',
+                                     'cases',
                                      date_selected,
                                      dataset = premade_df,
                                      hue='state',
-                                     title='Currently hospitalized patients by state'),
                                      ylog=ylog,
-                        use_container_width = False)
-    if 'Positivity Rate' in plot_selected:
-        st.plotly_chart(h.line_plotter('date',
-                                     'pos_per_tests',
-                                     date_selected,
-                                     dataset = premade_df,
-                                     hue='state',
-                                     title='Positivity rate by state', range_y=(0,0.5)),
-                        use_container_width = False)
-        st.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
-    if 'Hospital vs Deaths' in plot_selected:
-        st.plotly_chart(h.scat_plotter('deathIncrease',
-                                     'hospitalizedCurrently',
-                                     dataset = premade_df,
-                                     title='Hospital patients related to new cases',
-                                     do_ols='ols',
-                                     hue='state'), 
+                                     title='Total cases by state'),
                         use_container_width = False)
 
 def app():
-    options = ['Change in Cases','Change in Deaths','Hospitalized', 'Positivity Rate', "Hospital vs Deaths"]
+    options = ['Change in Cases','Change in Deaths','Total Cases']
     
     colb, cold = st.beta_columns(2)
     
@@ -99,17 +86,15 @@ def app():
         st.info("Select a beginning and end date")
         st.stop()
 
-    premade_cols = ['date','state',
-                    'positive','positiveIncrease',
-                    'hospitalizedCurrently','hospitalizedIncrease',
-                    'inIcuCurrently',
-                    'death', 'deathIncrease','pos_per_tests']
+    premade_cols = ['date', 'state', 'fips', 'cases', 'deaths', 'new_cases',
+                    'weekly_rolling_new_cases', 'monthly_rolling_new_cases',
+                    'new_deaths', 'weekly_rolling_new_deaths', 'monthly_rolling_new_deaths']
 
     resultset = h.sql_orm_requester(premade_cols,table, session)
     my_df = pd.DataFrame(resultset)
     my_df['date'] = pd.to_datetime(my_df['date'])
 
-    premade_df = h.dataset_filterer(my_df, 'state', default_selected = ['OH','TX','FL'])
+    premade_df = h.dataset_filterer(my_df, 'state', default_selected = ['Ohio','Texas','Florida'])
 
     premade(premade_df, plot_selected, date_selected)
     session.close()
