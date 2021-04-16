@@ -75,7 +75,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      hue='location',
                                      title='Positivity rate by location', range_y=(0,0.5)),
                         use_container_width = False)
-        placeholder.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
+        placeholder.info('W.H.O. guidelines recommend a positivity rate of at most __0.05__ for two weeks before nations reopen.')
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls the appropriate plotter()'''
