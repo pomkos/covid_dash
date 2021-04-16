@@ -37,10 +37,11 @@ st.title("Covid USA Test")
 def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
     
-    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
+    placeholder = st.empty()
+    placeholder.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
     ylog = st.checkbox('log(y axis)')
     if ylog:
-        st.info("The log of these values indicates the speed of transmission, making the flattening of curves more apparent.")
+        placeholder.info("The log of these values indicates the speed of transmission, making the flattening of curves more apparent.")
 
     if 'Change in Cases' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
