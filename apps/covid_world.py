@@ -40,6 +40,8 @@ session=Session()
 
 def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
+    placeholder = st.empty()
+    placeholder.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
     
     if 'Deaths per mill' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -73,8 +75,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      hue='location',
                                      title='Positivity rate by location', range_y=(0,0.5)),
                         use_container_width = False)
-        st.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
-    st.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
+        placeholder.info('W.H.O. guidelines recommend a positivity rate of at most 0.05 for two weeks before nations reopen.')
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls the appropriate plotter()'''
