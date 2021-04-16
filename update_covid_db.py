@@ -5,23 +5,32 @@ import os
 import sys
 
 def get_usa():
+    '''
+    Download new data, merge with pop, calculate new variables
+    '''
     usa_df = pd.read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
-    usa_df['fips'] = usa_df['fips'].astype('category')
     usa_df['date'] = usa_df['date'].apply(lambda x: dt.datetime.strptime(x,'%Y-%m-%d'))
+    statepop = pd.read_csv("data/statepop.csv")[['NAME','STATE','POPESTIMATE2019']].iloc[5:,:].reset_index(drop=True)
+    statepop.columns = ['state','fips','pop']
 
+    usa_df = usa_df.merge(statepop, on=['state' ,'fips'])
     new_df = pd.DataFrame(columns=usa_df.columns)
 
     for state in usa_df['state'].unique():
         temp_df = usa_df[usa_df['state'] == state].copy()
         temp_df['new_cases'] = temp_df['cases'].diff()
         temp_df['weekly_rolling_new_cases'] = temp_df['new_cases'].rolling(window = 7).mean()
-        temp_df['monthly_rolling_new_cases'] = temp_df['new_cases'].rolling(window = 30).mean()
-        
+
         temp_df['new_deaths'] = temp_df['deaths'].diff()
         temp_df['weekly_rolling_new_deaths'] = temp_df['new_deaths'].rolling(window = 7).mean()
-        temp_df['monthly_rolling_new_deaths'] = temp_df['new_deaths'].rolling(window = 30).mean()
-        
+
         new_df = new_df.append(temp_df)
+        
+    new_df['cases_per_100k'] = (new_df['cases']/new_df['pop']) * 100000
+    new_df['deaths_per_100k'] = (new_df['deaths']/new_df['pop']) * 100000
+    new_df['weekly_rolling_new_cases_per_100k'] = (new_df['weekly_rolling_new_cases']/new_df['pop']) * 100000
+    new_df['weekly_rolling_new_deaths_per_100k'] = (new_df['weekly_rolling_new_deaths']/new_df['pop']) * 100000
+
     return new_df.reset_index(drop=True)
 
 def get_world():
