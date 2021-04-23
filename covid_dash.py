@@ -56,6 +56,8 @@ def app():
         
     elif "world vacc" in data_choice.lower():
         st.title("Vaccine Dash")
+        from apps import vax_world
+        vax_world.app()
 
     ### Temporarily Removed Advanced Setting ###
     st.stop()

@@ -54,6 +54,19 @@ def get_world():
     world_df["deaths_per_pos"] = world_df["new_deaths"] / world_df["new_cases"]
     world_df["pos_per_tests"] = world_df["new_cases"] / world_df["new_tests"]
     world_df["rolling_pos_per_tests"] = world_df["pos_per_tests"].rolling(7).mean()
+    
+    # rename columns
+    new_col_names = {
+         'people_vaccinated':'one_dose_vaccinated',
+         'people_fully_vaccinated':'all_doses_vaccinated',
+         'new_vaccinations':'new_doses_administered',
+         'new_vaccinations_smoothed':'new_doses_administered_smoothed',
+         'people_vaccinated_per_hundred':'one_dose_vaccinated_per_hundred',
+         'people_fully_vaccinated_per_hundred':'all_doses_vaccinated_per_hundred',
+         'new_vaccinations_smoothed_per_million':'new_doses_administered_smoothed_per_million'
+    }
+    world_df = world_df.rename(new_col_names, axis=1)
+    
     return world_df
 
 
