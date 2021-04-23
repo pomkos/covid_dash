@@ -164,6 +164,7 @@ def premade(premade_df, plot_selected, date_selected):
                 ),
                 use_container_width=False,
             )
+            st.warning("The graph may be blank as not all countries publish hospital data")
 
 
 def build_own(x_options, y_options, hue_options, date_selected, plt_type="lineplot"):
@@ -233,7 +234,7 @@ def app():
     """
     options = [
         "New cases",
-        " New deaths",
+        "New deaths",
         "Total cases",
         "Total deaths",
         "Hosp patients per mill",
