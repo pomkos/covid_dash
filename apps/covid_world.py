@@ -38,44 +38,102 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session=Session()
 
+def ylabel_format(my_string, ylog):
+    if my_string == 'rolling_pos_per_tests':
+        my_string = 'Positivity ratio'
+    else:
+        my_string = my_string.replace('smoothed_', '').replace('_',' ').capitalize()
+        
+    if ylog:
+        my_string += ' (log)'
+    return my_string
+
 def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
-    placeholder = st.empty()
-    placeholder.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
-    
-    if 'Deaths per mill' in plot_selected:
-        st.plotly_chart(h.line_plotter('date',
-                                     'new_deaths_smoothed_per_million',
-                                     date_selected,
-                                     dataset = premade_df,
-                                     hue='location',
-                                     title='Deaths per million by location'),
-                        use_container_width = False)
-    if 'Cases per mill' in plot_selected:
-        st.plotly_chart(h.line_plotter('date',
-                                     'new_cases_smoothed_per_million',
-                                     date_selected,
-                                     dataset = premade_df,
-                                     hue='location',
-                                     title='Cases per million by location'),
-                        use_container_width = False)
-    if 'Hosp patients per mill' in plot_selected:
-        st.plotly_chart(h.line_plotter('date',
-                                     'hosp_patients_per_million',
-                                     date_selected,
-                                     dataset = premade_df,
-                                     hue='location',
-                                     title='Hospital patients per million by location'),
-                        use_container_width = False)
     if 'Positivity rate' in plot_selected:
+        st.info('W.H.O. guidelines recommend a positivity rate of at most __0.05__ for two weeks before nations reopen.')
+
+        # cant do log of this data
+        ylabel = 'rolling_pos_per_tests'
+        ylog = False
         st.plotly_chart(h.line_plotter('date',
-                                     'rolling_pos_per_tests',
-                                     date_selected,
-                                     dataset = premade_df,
-                                     hue='location',
-                                     title='Positivity rate by location', range_y=(0,0.5)),
+                                       ylabel,
+                                       date_selected,
+                                       dataset = premade_df,
+                                       hue='location',
+                                       labels={ylabel:ylabel_format(ylabel,ylog),
+                                               'date':''},
+                                       title='Positivity rate by location', range_y=(0,0.5)),
                         use_container_width = False)
-        placeholder.info('W.H.O. guidelines recommend a positivity rate of at most __0.05__ for two weeks before nations reopen.')
+        st.write("The positivity rate is calculated as 'number of positive tests' / 'positive + negative tests'")
+
+    else:
+        placeholder = st.empty()
+        placeholder.info('__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save.')
+        ylog = st.checkbox('log(y axis)')
+        if ylog:
+            placeholder.info("The log of these values indicates the speed of transmission, making the flattening of curves more apparent.")
+
+        if 'New deaths' in plot_selected:
+            ylabel = 'new_deaths_smoothed_per_million'
+            st.plotly_chart(h.line_plotter('date',
+                                           ylabel,
+                                           date_selected,
+                                           dataset = premade_df,
+                                           hue='location',
+                                           ylog=ylog,
+                                           labels={ylabel:ylabel_format(ylabel, ylog),
+                                                   'date':''},
+                                           title='New deaths per million by location'),
+                            use_container_width = False)
+        if 'New cases' in plot_selected:
+            ylabel = 'new_cases_smoothed_per_million'
+            st.plotly_chart(h.line_plotter('date',
+                                           ylabel,
+                                           date_selected,
+                                           dataset = premade_df,
+                                           hue='location',
+                                           ylog=ylog,
+                                           labels={ylabel:ylabel_format(ylabel, ylog),
+                                                   'date':''},
+                                           title='New cases per million by location'),
+                            use_container_width = False)
+        if 'Total cases' in plot_selected:
+            ylabel = 'total_cases_per_million'
+            st.plotly_chart(h.line_plotter('date',
+                                           ylabel,
+                                           date_selected,
+                                           dataset = premade_df,
+                                           hue='location',
+                                           ylog=ylog,
+                                           labels={ylabel:ylabel_format(ylabel, ylog),
+                                                   'date':''},
+                                           title='Total cases per million by location'),
+                            use_container_width = False)
+        if 'Total deaths' in plot_selected:
+            ylabel = 'total_deaths_per_million'
+            st.plotly_chart(h.line_plotter('date',
+                                           ylabel,
+                                           date_selected,
+                                           dataset = premade_df,
+                                           hue='location',
+                                           ylog=ylog,
+                                           labels={ylabel:ylabel_format(ylabel, ylog),
+                                                   'date':''},
+                                           title='Total deaths per million by location'),
+                            use_container_width = False)
+        if 'Hosp patients per mill' in plot_selected:
+            ylabel = 'hosp_patients_per_million'
+            st.plotly_chart(h.line_plotter('date',
+                                           ylabel,
+                                           date_selected,
+                                           dataset = premade_df,
+                                           hue='location',
+                                           ylog=ylog,
+                                           labels={ylabel:ylabel_format(ylabel, ylog),
+                                                   'date':''},
+                                           title='Hospital patients per million by location'),
+                            use_container_width = False)
             
 def build_own(x_options,y_options,hue_options,date_selected,plt_type='lineplot'):
     '''Presents options for user to make own graph, then calls the appropriate plotter()'''
@@ -131,7 +189,7 @@ def app():
     if view_type == "Premade Plots":
         col_sel, col_date = st.beta_columns(2)
         with col_sel:
-            options = ['Cases per mill','Deaths per mill','Hosp patients per mill','Positivity rate']
+            options = ['New cases',' New deaths', 'Total cases', 'Total deaths','Hosp patients per mill','Positivity rate']
             plot_selected = st.selectbox('Select a plot',options,index=0)        
         with col_date:
             date_selected = st.date_input('Change the dates?', value=(dt.datetime(2020,3,1),dt.datetime.now()))
@@ -142,12 +200,12 @@ def app():
         
         columns = ['location','continent','date','hosp_patients_per_million',
                    'new_cases_smoothed_per_million','new_deaths_smoothed_per_million',
+                   'total_cases_per_million', 'total_deaths_per_million', 
                    'rolling_pos_per_tests']
 
         my_df=pd.DataFrame(h.sql_orm_requester(columns, table, session))
         my_df['date'] = pd.to_datetime(my_df['date'])
         
-        col_we, col_ee, col_am = st.beta_columns(3)
         #st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
         st.sidebar.write("-----------------")
         region = st.sidebar.radio("Preset locations", options = ['Default', 'North America', 'West Europe', 

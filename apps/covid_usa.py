@@ -31,9 +31,6 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session=Session()
 
-st.title("Covid USA Test")
-############ TESTING AREA ############
-
 def premade(premade_df, plot_selected, date_selected):
     '''Presents a couple premade, sanitized graphs'''
     
@@ -52,7 +49,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      ylog=ylog,
                                      labels={'weekly_rolling_new_cases_per_100k':'New cases per 100k',
                                              'date':''},
-                                     title='Change in mean weekly cases by state'),
+                                     title='New weekly cases by state'),
                         use_container_width = False,)
     if 'Change in Deaths' in plot_selected:
         st.plotly_chart(h.line_plotter('date',
@@ -63,7 +60,7 @@ def premade(premade_df, plot_selected, date_selected):
                                      ylog=ylog,
                                      labels={'weekly_rolling_new_deaths_per_100k':'New deaths per 100k',
                                              'date':''},
-                                     title='Change in mean weekly deaths by state'),
+                                     title='New weekly deaths by state'),
                         use_container_width = False)
     if 'Total Cases' in plot_selected:
         st.plotly_chart(h.line_plotter('date',

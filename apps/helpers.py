@@ -67,7 +67,6 @@ def sql_orm_requester(columns, table, session):
 ######################
 ### PLOT FUNCTIONS ###
 ######################
-
 def scat_plotter(x,y,dataset,hue=None,xlog=False,ylog=False,title=None, do_ols=None,**kwargs):
     '''Plotly plots a scatterplot'''
     if title == None:
@@ -84,7 +83,6 @@ def scat_plotter(x,y,dataset,hue=None,xlog=False,ylog=False,title=None, do_ols=N
                          trendline=do_ols,
                          **kwargs)
     return my_plot
-
 def line_plotter(x,y,date_selected, dataset,hue=None,xlog=False,ylog=False,title=None,**kwargs):
     '''Plotly plots a lineplot'''
     if title == None:
