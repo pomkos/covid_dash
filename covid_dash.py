@@ -32,11 +32,11 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)  # hides the hamburger
 def app():
     """Bulk of webgui, calls relevant functions"""
     data_choice = st.sidebar.radio(
-        "", ["USA Data", "World Data", "Animations"], index=0
+        "", ["USA Cases", "World Cases", "World Vaccination" , "Animations"], index=0
     )
     st.sidebar.write("--------")
 
-    if "usa" in data_choice.lower():
+    if "usa cases" in data_choice.lower():
         st.title("Covid Dash")
         from apps import covid_usa
 
@@ -48,11 +48,14 @@ def app():
 
         map_maker.app()
         ###########################################
-    else:
+    elif "world cases" in data_choice.lower():
         st.title("Covid Dash")
         from apps import covid_world
 
         covid_world.app()
+        
+    elif "world vacc" in data_choice.lower():
+        st.title("Vaccine Dash")
 
     ### Temporarily Removed Advanced Setting ###
     st.stop()
