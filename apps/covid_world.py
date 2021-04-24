@@ -198,21 +198,17 @@ def app():
         if "new deaths" in plot_selected:
             ylabel = "new_deaths_smoothed_per_million"
             title="New deaths per million by location"
-            graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
         elif "new cases" in plot_selected:
             ylabel = "new_cases_smoothed_per_million"
             title="New cases per million by location"
-            graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
         elif "total cases" in plot_selected:
             ylabel = "total_cases_per_million"
             title="Total cases per million by location"
-            graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
         elif "total deaths" in plot_selected:
             ylabel = "total_deaths_per_million"
             title="Total deaths per million by location"
-            graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
         elif "hosp patients per mill" in plot_selected:
             ylabel = "hosp_patients_per_million"
             title="Hospital patients per million by location"
-            graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
-            st.warning("The graph may be blank as not all countries publish hospital data")
+            placeholder.warning("The graph may be blank as not all countries publish hospital data")
+        graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)

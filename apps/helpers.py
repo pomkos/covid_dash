@@ -12,7 +12,7 @@ def ylabel_format(my_string, ylog):
     elif "_per_hundred" in my_string:
         my_string = "Percent (%)"
     else:
-        my_string = my_string.replace("smoothed_", "").replace("_", " ").capitalize()
+        my_string = my_string.replace("smoothed_", "").replace("rolling_", "").replace("_", " ").capitalize()
 
     if ylog:
         my_string += " (log)"

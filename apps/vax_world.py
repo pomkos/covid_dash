@@ -169,21 +169,24 @@ def app():
     if "new doses" in plot_selected:
         ylabel = "new_doses_administered_smoothed_per_million"
         title = "New doses administered per million"
-        graph_caller(ylabel, date_selected, premade_df, title)
-        st.info("__Description:__ New doses administered this week, regardless of vaccine brand")
+        perc_range = False
+        my_info = "__Description:__ New doses administered this week, regardless of vaccine brand"
     elif "fully vacc" in plot_selected:
         ylabel = "all_doses_vaccinated_per_hundred"
         title = "Percent population fully vaccinated"
-        graph_caller(ylabel, date_selected, premade_df, title, perc_range=True)
-        st.info("__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses")
+        perc_range=True
+        my_info = "__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses"
     elif "partially vacc" in plot_selected:
         ylabel = "one_dose_vaccinated_per_hundred"
         title = "Percent population partially vaccinated"
-        graph_caller(ylabel, date_selected, premade_df, title, perc_range=True)
-        st.info("__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)")
+        perc_range=True
+        my_info = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
     elif "all doses" in plot_selected:
         ylabel = "total_vaccinations_per_hundred"
         title = "Percent population with at least one dose administered"
-        graph_caller(ylabel, date_selected, premade_df, title, perc_range=True)
-        st.info("__Description:__ Percent of population who received at least one dose, including fully dosed populations")
+        perc_range=True
+        my_info = "__Description:__ Percent of population who received at least one dose, including fully dosed populations"
+
+    graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
+    st.info(my_info)
 

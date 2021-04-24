@@ -31,86 +31,47 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
-
-def premade(premade_df, plot_selected, date_selected):
-    """Presents a couple premade, sanitized graphs"""
-
-    placeholder = st.empty()
-    placeholder.info(
-        "__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save."
-    )
-    ylog = st.checkbox("log(y axis)")
-    if ylog:
-        placeholder.info(
-            "The log of these values indicates the speed of transmission, making the flattening of curves more apparent."
-        )
-
-    if "Change in Cases" in plot_selected:
+def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='state'):
+    '''
+    Calls h.line_plotter(). Created to avoid repetitive code.
+    
+    input
+    -----
+    yrange: tuple
+        None or tuple. If tuple, indicates the min and max values for y axis
+    '''
+    if not yrange:
         st.plotly_chart(
             h.line_plotter(
                 "date",
-                "weekly_rolling_new_cases_per_100k",
+                ylabel,
                 date_selected,
                 dataset=premade_df,
-                hue="state",
+                hue=hue,
                 ylog=ylog,
-                labels={
-                    "weekly_rolling_new_cases_per_100k": "New cases per 100k",
-                    "date": "",
-                },
-                title="New weekly cases by state",
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
+                title=title,
             ),
             use_container_width=False,
         )
-    if "Change in Deaths" in plot_selected:
+    else:
         st.plotly_chart(
             h.line_plotter(
                 "date",
-                "weekly_rolling_new_deaths_per_100k",
+                ylabel,
                 date_selected,
                 dataset=premade_df,
-                hue="state",
+                hue=hue,
                 ylog=ylog,
-                labels={
-                    "weekly_rolling_new_deaths_per_100k": "New deaths per 100k",
-                    "date": "",
-                },
-                title="New weekly deaths by state",
+                range_y=yrange,
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
+                title=title,
             ),
             use_container_width=False,
         )
-    if "Total Cases" in plot_selected:
-        st.plotly_chart(
-            h.line_plotter(
-                "date",
-                "cases_per_100k",
-                date_selected,
-                dataset=premade_df,
-                hue="state",
-                ylog=ylog,
-                labels={"cases_per_100k": "Cases per 100k", "date": ""},
-                title="Total cases by state",
-            ),
-            use_container_width=False,
-        )
-    if "Total Deaths" in plot_selected:
-        st.plotly_chart(
-            h.line_plotter(
-                "date",
-                "deaths_per_100k",
-                date_selected,
-                dataset=premade_df,
-                hue="state",
-                ylog=ylog,
-                labels={"deaths_per_100k": "Deaths per 100k", "date": ""},
-                title="Total deaths by state",
-            ),
-            use_container_width=False,
-        )
-
 
 def app():
-    options = ["Change in Cases", "Change in Deaths", "Total Cases", "Total Deaths"]
+    options = ["Change in cases", "Change in deaths", "Total cases", "Total deaths"]
 
     plot_selected = st.sidebar.selectbox("Select a plot", options, index=0)
     date_selected = st.sidebar.date_input(
@@ -138,6 +99,7 @@ def app():
     ]
 
     resultset = h.sql_orm_requester(premade_cols, table, session)
+    session.close()
     my_df = pd.DataFrame(resultset)
     my_df["date"] = pd.to_datetime(my_df["date"])
 
@@ -145,5 +107,26 @@ def app():
         my_df, "state", default_selected=["Ohio", "Texas", "Florida"]
     )
 
-    premade(premade_df, plot_selected, date_selected)
-    session.close()
+    placeholder = st.empty()
+    placeholder.info(
+        "__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save."
+    )
+    ylog = st.checkbox("log(y axis)")
+    if ylog:
+        placeholder.info(
+            "The log of these values indicates the speed of transmission, making the flattening of curves more apparent."
+        )
+    plot_selected = plot_selected.lower()
+    if "change in cases" in plot_selected:
+        ylabel = "weekly_rolling_new_cases_per_100k"
+        title = "New weekly cases by state"
+    elif "change in deaths" in plot_selected:
+        ylabel = "weekly_rolling_new_deaths_per_100k"
+        title = "New weekly deaths by state"
+    elif "total cases" in plot_selected:
+        ylabel = "cases_per_100k"
+        title = "Total cases by state"
+    elif "total deaths" in plot_selected:
+        ylabel = "deaths_per_100k"
+        title = "Total deaths by state"
+    graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
