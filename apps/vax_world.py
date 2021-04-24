@@ -170,7 +170,7 @@ def app():
         ylabel = "new_doses_administered_smoothed_per_million"
         title = "New doses administered per million"
         perc_range = False
-        my_info = "__Description:__ New doses administered this week, regardless of vaccine brand"
+        my_info = "__Description:__ New doses administered this week, regardless of vaccine brand or type"
     elif "fully vacc" in plot_selected:
         ylabel = "all_doses_vaccinated_per_hundred"
         title = "Percent population fully vaccinated"

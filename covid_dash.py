@@ -39,24 +39,28 @@ def app():
     if "usa cases" in data_choice.lower():
         st.title("Covid Dash")
         from apps import covid_usa
-
+        url = "https://github.com/nytimes/covid-19-data"
         covid_usa.app()
 
     elif "animations" in data_choice.lower():
         ############### TESTING AREA ###############
         from apps import map_maker
-
         map_maker.app()
+        url = "https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series"
         ###########################################
     elif "world cases" in data_choice.lower():
         st.title("Covid Dash")
+        url = "https://github.com/owid/covid-19-data/tree/master/public/data"
         from apps import covid_world
 
         covid_world.app()
-        
+
     elif "world vacc" in data_choice.lower():
         st.title("Vaccine Dash")
+        url = "https://github.com/owid/covid-19-data/tree/master/public/data"
         from apps import vax_world
         vax_world.app()
 
+    source = f"[Data source]({url})"
+    st.sidebar.write(source)
 app()
