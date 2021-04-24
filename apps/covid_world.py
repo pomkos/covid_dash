@@ -38,18 +38,6 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
-
-def ylabel_format(my_string, ylog):
-    if my_string == "rolling_pos_per_tests":
-        my_string = "Positivity ratio"
-    else:
-        my_string = my_string.replace("smoothed_", "").replace("_", " ").capitalize()
-
-    if ylog:
-        my_string += " (log)"
-    return my_string
-
-
 def premade(premade_df, plot_selected, date_selected):
     """Presents a couple premade, sanitized graphs"""
     if "Positivity rate" in plot_selected:
@@ -67,7 +55,7 @@ def premade(premade_df, plot_selected, date_selected):
                 date_selected,
                 dataset=premade_df,
                 hue="location",
-                labels={ylabel: ylabel_format(ylabel, ylog), "date": ""},
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
                 title="Positivity rate by location",
                 range_y=(0, 0.5),
             ),
@@ -99,7 +87,7 @@ def premade(premade_df, plot_selected, date_selected):
                     dataset=premade_df,
                     hue="location",
                     ylog=ylog,
-                    labels={ylabel: ylabel_format(ylabel, ylog), "date": ""},
+                    labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
                     title="New deaths per million by location",
                 ),
                 use_container_width=False,
@@ -114,7 +102,7 @@ def premade(premade_df, plot_selected, date_selected):
                     dataset=premade_df,
                     hue="location",
                     ylog=ylog,
-                    labels={ylabel: ylabel_format(ylabel, ylog), "date": ""},
+                    labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
                     title="New cases per million by location",
                 ),
                 use_container_width=False,
@@ -129,7 +117,7 @@ def premade(premade_df, plot_selected, date_selected):
                     dataset=premade_df,
                     hue="location",
                     ylog=ylog,
-                    labels={ylabel: ylabel_format(ylabel, ylog), "date": ""},
+                    labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
                     title="Total cases per million by location",
                 ),
                 use_container_width=False,
@@ -144,7 +132,7 @@ def premade(premade_df, plot_selected, date_selected):
                     dataset=premade_df,
                     hue="location",
                     ylog=ylog,
-                    labels={ylabel: ylabel_format(ylabel, ylog), "date": ""},
+                    labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
                     title="Total deaths per million by location",
                 ),
                 use_container_width=False,
@@ -159,7 +147,7 @@ def premade(premade_df, plot_selected, date_selected):
                     dataset=premade_df,
                     hue="location",
                     ylog=ylog,
-                    labels={ylabel: ylabel_format(ylabel, ylog), "date": ""},
+                    labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
                     title="Hospital patients per million by location",
                 ),
                 use_container_width=False,
