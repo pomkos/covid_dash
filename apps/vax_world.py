@@ -38,30 +38,46 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
-def graph_caller(ylabel, date_selected, premade_df, title, ylog=False):
+def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, perc_range = False):
     '''
     Calls h.line_plotter(). Created to avoid repetitive code.
     '''
-    st.plotly_chart(
-        h.line_plotter(
-            "date",
-            ylabel,
-            date_selected,
-            dataset=premade_df,
-            hue="location",
-            ylog=ylog,
-            labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
-            title=title,
-        ),
-        use_container_width=False,
-    )
+    if perc_range:
+        st.plotly_chart(
+            h.line_plotter(
+                "date",
+                ylabel,
+                date_selected,
+                dataset=premade_df,
+                hue="location",
+                ylog=ylog,
+                range_y=(0, 100),
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
+                title=title,
+            ),
+            use_container_width=False,
+        )
+    else:
+        st.plotly_chart(
+            h.line_plotter(
+                "date",
+                ylabel,
+                date_selected,
+                dataset=premade_df,
+                hue="location",
+                ylog=ylog,
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
+                title=title,
+            ),
+            use_container_width=False,
+        )
 
 def app():
     options = [
-        "New doses administered",
         "Fully vaccinated",
         "Partially vaccinated",
-        "All vaccinations",
+        "All doses administered",
+        "New doses administered",
     ]
     plot_selected = st.sidebar.selectbox("Select a plot", options, index=0)
     date_selected = st.sidebar.date_input(
@@ -154,16 +170,20 @@ def app():
         ylabel = "new_doses_administered_smoothed_per_million"
         title = "New doses administered per million"
         graph_caller(ylabel, date_selected, premade_df, title)
+        st.info("__Description:__ New doses administered this week, regardless of vaccine brand")
     elif "fully vacc" in plot_selected:
         ylabel = "all_doses_vaccinated_per_hundred"
-        title = "Fully vaccinated population per country"
-        graph_caller(ylabel, date_selected, premade_df, title)
+        title = "Percent population fully vaccinated"
+        graph_caller(ylabel, date_selected, premade_df, title, perc_range=True)
+        st.info("__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses")
     elif "partially vacc" in plot_selected:
         ylabel = "one_dose_vaccinated_per_hundred"
-        title = "Partially vaccinated population per country"
-        graph_caller(ylabel, date_selected, premade_df, title)
-    elif "all vacc" in plot_selected:
-        ylabel = "all_doses_vaccinated_per_hundred"
-        title = "Total doses administered per country"
-        graph_caller(ylabel, date_selected, premade_df, title)
+        title = "Percent population partially vaccinated"
+        graph_caller(ylabel, date_selected, premade_df, title, perc_range=True)
+        st.info("__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)")
+    elif "all doses" in plot_selected:
+        ylabel = "total_vaccinations_per_hundred"
+        title = "Percent population with at least one dose administered"
+        graph_caller(ylabel, date_selected, premade_df, title, perc_range=True)
+        st.info("__Description:__ Percent of population who received at least one dose, including fully dosed populations")
 
