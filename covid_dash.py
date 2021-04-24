@@ -59,29 +59,4 @@ def app():
         from apps import vax_world
         vax_world.app()
 
-    ### Temporarily Removed Advanced Setting ###
-    st.stop()
-    with st.beta_expander("Advanced settings"):
-        # Settings to update or download the datasets
-        col_up, col_down = st.beta_columns([0.29, 1])
-        with col_up:
-            update = st.button("Update Database")
-        if update == True:
-            import update_covid_db as ucd
-
-            with st.spinner("Gathering the latest data ..."):
-                result = ucd.app()
-                st.success(result)
-
-        with col_down:
-            download = st.button("Download World Dataset")
-        if download == True:
-            st.error("Tell Pete to reimplement downloading.")
-            st.stop()
-
-
-#             with st.spinner('Saving dataset ...'):
-#                 premade_df.to_excel('data/covid_dataset.xlsx',index=False)
-#                 st.markdown(h.file_downloader_html('data/covid_dataset.xlsx', 'Dataset'), unsafe_allow_html=True)
-
 app()

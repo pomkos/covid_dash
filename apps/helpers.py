@@ -6,6 +6,18 @@ import plotly.express as px
 ########################
 
 
+def ylabel_format(my_string, ylog):
+    if my_string == "rolling_pos_per_tests":
+        my_string = "Positivity ratio"
+    elif "vacc" in my_string:
+        my_string = my_string.replace("vaccinated_per_hundred", "(%)").replace("_", " ").capitalize()
+    else:
+        my_string = my_string.replace("smoothed_", "").replace("_", " ").capitalize()
+
+    if ylog:
+        my_string += " (log)"
+    return my_string
+
 def str_formatter(my_str):
     """
     To make choices and axes pretty
