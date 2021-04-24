@@ -38,10 +38,13 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
-def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, perc_range = False):
-    '''
+
+def graph_caller(
+    ylabel, date_selected, premade_df, title, ylog=False, perc_range=False
+):
+    """
     Calls h.line_plotter(). Created to avoid repetitive code.
-    '''
+    """
     if perc_range:
         st.plotly_chart(
             h.line_plotter(
@@ -52,7 +55,11 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, perc_rang
                 hue="location",
                 ylog=ylog,
                 range_y=(0, 100),
-                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": "", "location":""},
+                labels={
+                    ylabel: h.ylabel_format(ylabel, ylog),
+                    "date": "",
+                    "location": "",
+                },
                 title=title,
             ),
             use_container_width=False,
@@ -66,11 +73,162 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, perc_rang
                 dataset=premade_df,
                 hue="location",
                 ylog=ylog,
-                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": "", "location":""},
+                labels={
+                    ylabel: h.ylabel_format(ylabel, ylog),
+                    "date": "",
+                    "location": "",
+                },
                 title=title,
             ),
             use_container_width=False,
         )
+
+
+def find_xy_annotations(date, location, ylabel, df):
+    """
+    Finds the x and y values to place annotations in
+
+    input
+    ----
+    date: str
+    location: str
+    """
+    sig_date = pd.to_datetime(date)
+    temp_df = df[(df["location"] == location) & (df["date"] == sig_date)]
+    ymax = temp_df[ylabel].max()
+    return sig_date, ymax
+
+
+def annotation_creator(fig, ylabel, df, annotation_settings):
+    """
+    Adds annotations to plotly figure based on variable input, finds
+    coordinates using find_xy_annotations()
+
+    input
+    ----
+    fig: px.figure
+        Figure created via plotly express
+    ylabel: str
+        Column to grab yaxis values from
+    df: pd.DataFrame
+        Dataframe to graph
+    annotation_settings: dict
+        Dictionary with the following keys and values
+            dates: list
+                List of strings in form of "December 07, 1998"
+            location: str
+                Location the annotation is relevant for
+            titles: list
+                List of strings with text the label should show
+            hovertexts: list
+                List of strings with text the label should show after hovering mouse over the label itself
+            ax: int
+                Number of pixels to shift annotation on the x axis
+            ay: int
+                Number of pixels to shift annotation on the y axis
+    """
+    # get coordinates
+    for i in range(len(annotation_settings["dates"])):
+        sig_date, ymax = find_xy_annotations(
+            date=annotation_settings["dates"][i],
+            location=annotation_settings["location"],
+            ylabel=ylabel,
+            df=df,
+        )
+        # add the annotation
+        fig.add_annotation(
+            x=sig_date,
+            y=ymax,
+            text=annotation_settings["titles"][i],
+            showarrow=True,
+            arrowhead=2,
+            arrowside="end",
+            arrowsize=1,
+            standoff=2,
+            ax=annotation_settings["ax"],
+            ay=annotation_settings["ay"],
+            hovertext=annotation_settings["hovertexts"][i],
+            align="left",
+        )
+
+
+def graph_new_doses(ylabel, date_selected, premade_df, title):
+    """
+    Sole function to graph new doses and call functions to add annotations to the graph
+
+    Source for annotations: https://plotly.com/python/reference/layout/annotations
+    """
+    info_box = st.empty()
+    fig = px.line(
+        data_frame=premade_df,
+        x="date",
+        y=ylabel,
+        range_x=date_selected,
+        labels={
+            ylabel: h.ylabel_format(ylabel, ylog=False),
+            "location": "",
+            "date": "",
+        },
+        color="location",
+    )
+    unique_locations = premade_df["location"].unique()
+
+    all_annotations = {}
+    if "United States" in unique_locations:
+        location = "United States"
+        annotations = {
+            "location": location,
+            "dates": ["April 13, 2021", "April 23, 2021"],
+            "titles": ["JJ vaccine <br> paused", "JJ vaccine <br> unpaused"],
+            "hovertexts": [
+                "CDC and FDA pause distribution <br> of J&J vaccine due to reports of rare blood clots <br> (CDC)",
+                "US lifts pause in use of J&J vaccine <br> after vote by expert panel <br> (NPR)",
+            ],
+            "ax": -30,
+            "ay": -70,
+        }
+        all_annotations[location] = annotations
+
+    if "Canada" in unique_locations:
+        location = "Canada"
+        annotations = {
+            "location": "Canada",
+            "dates": ["March 29, 2021"],
+            "titles": ["AZ vaccine pause <br> recommended"],
+            "hovertexts": [
+                "Suspend AstraZeneca use for people under 55, <br> vaccine committee recommends <br> (CBC.ca)"
+            ],
+            "ax": -50,
+            "ay": -90,
+        }
+        all_annotations[location] = annotations
+
+    if "Europe" in unique_locations:
+        location = "Europe"
+        annotations = {
+            "location": "Europe",
+            "dates": ["March 14, 2021", "April 3, 2021"],
+            "titles": [
+                "AstraZeneca clots <br> confirmed",
+                "EMA report released",
+            ],
+            "hovertexts": [
+                """Studies suggest link between blood clots, AstraZeneca <br> (University of Minnesota CIDRAP News)""",
+                """EMA finds link to very rare cases of unusual blood clots <br> (European Medicines Agency statement)""",
+            ],
+            "ax": -4,
+            "ay": -65,
+        }
+        all_annotations[location] = annotations
+
+    for country in all_annotations.keys():
+        annotations = all_annotations[country]
+        annotation_creator(
+            fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
+        )
+    info_box.info("__Tip__: Move cursor over annotations for more details")
+    st.plotly_chart(fig)
+
 
 def app():
     options = [
@@ -91,11 +249,10 @@ def app():
         "location",
         "continent",
         "date",
-
-        'total_vaccinations_per_hundred',
+        "total_vaccinations_per_hundred",
         "one_dose_vaccinated_per_hundred",
         "all_doses_vaccinated_per_hundred",
-        'new_doses_administered_smoothed_per_million'
+        "new_doses_administered_smoothed_per_million",
     ]
 
     my_df = pd.DataFrame(h.sql_orm_requester(columns, table, session))
@@ -166,26 +323,29 @@ def app():
 
     plot_selected = plot_selected.lower()
     if "new doses" in plot_selected:
+        # this one gets its own plot. With annotations and hookers!
         ylabel = "new_doses_administered_smoothed_per_million"
         title = "New doses administered per million"
-        perc_range = False
+        graph_new_doses(ylabel, date_selected, premade_df, title)
         my_info = "__Description:__ New doses administered this week, regardless of vaccine brand or type"
-    elif "fully vacc" in plot_selected:
-        ylabel = "all_doses_vaccinated_per_hundred"
-        title = "Percent population fully vaccinated"
-        perc_range=True
-        my_info = "__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses"
-    elif "partially vacc" in plot_selected:
-        ylabel = "one_dose_vaccinated_per_hundred"
-        title = "Percent population partially vaccinated"
-        perc_range=True
-        my_info = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
-    elif "all doses" in plot_selected: # deprecated. shows USA as 60% vaxxed, which is clearly wrong ... 
-        ylabel = "total_vaccinations_per_hundred"
-        title = "Percent population with at least one dose administered"
-        perc_range=True
-        my_info = "__Description:__ Percent of population who received at least one dose, including fully dosed populations"
+    else:
+        if "fully vacc" in plot_selected:
+            ylabel = "all_doses_vaccinated_per_hundred"
+            title = "Percent population fully vaccinated"
+            perc_range = True
+            my_info = "__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses"
+        elif "partially vacc" in plot_selected:
+            ylabel = "one_dose_vaccinated_per_hundred"
+            title = "Percent population partially vaccinated"
+            perc_range = True
+            my_info = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
+        elif (
+            "all doses" in plot_selected
+        ):  # deprecated. shows USA as 60% vaxxed, which is clearly wrong ...
+            ylabel = "total_vaccinations_per_hundred"
+            title = "Percent population with at least one dose administered"
+            perc_range = True
+            my_info = "__Description:__ Percent of population who received at least one dose, including fully dosed populations"
 
-    graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
+        graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
     st.info(my_info)
-
