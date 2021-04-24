@@ -241,7 +241,6 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
         all_annotations[location] = annotations
 
     for country in all_annotations.keys():
-        st.write(country)
         annotations = all_annotations[country]
         annotation_creator(
             fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
