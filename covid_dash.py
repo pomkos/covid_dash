@@ -32,7 +32,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)  # hides the hamburger
 def app():
     """Bulk of webgui, calls relevant functions"""
     data_choice = st.sidebar.radio(
-        "", ["USA Cases", "World Cases", "World Vaccination" , "Animations"], index=0
+        "", ["World Vaccinations", "USA Cases", "World Cases", "Animations"], index=0
     )
     st.sidebar.write("--------")
 
