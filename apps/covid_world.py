@@ -42,7 +42,7 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
     yrange: tuple
         None or tuple. If tuple, indicates the min and max values for y axis
     '''
-    if not yrange:
+    if not yrange: # no limit on the y axis
         st.plotly_chart(
             h.line_plotter(
                 "date",
@@ -51,12 +51,12 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
                 dataset=premade_df,
                 hue=hue,
                 ylog=ylog,
-                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": "", "location":""},
                 title=title,
             ),
             use_container_width=False,
         )
-    else:
+    else: # y axis is limited by tuple
         st.plotly_chart(
             h.line_plotter(
                 "date",
@@ -66,7 +66,7 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
                 hue=hue,
                 ylog=ylog,
                 range_y=yrange,
-                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": ""},
+                labels={ylabel: h.ylabel_format(ylabel, ylog), "date": "", "location":""},
                 title=title,
             ),
             use_container_width=False,
