@@ -76,7 +76,6 @@ def app():
     options = [
         "Fully vaccinated",
         "Partially vaccinated",
-        "All doses administered",
         "New doses administered",
     ]
     plot_selected = st.sidebar.selectbox("Select a plot", options, index=0)
@@ -181,7 +180,7 @@ def app():
         title = "Percent population partially vaccinated"
         perc_range=True
         my_info = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
-    elif "all doses" in plot_selected:
+    elif "all doses" in plot_selected: # deprecated. shows USA as 60% vaxxed, which is clearly wrong ... 
         ylabel = "total_vaccinations_per_hundred"
         title = "Percent population with at least one dose administered"
         perc_range=True
