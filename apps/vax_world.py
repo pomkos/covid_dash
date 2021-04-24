@@ -181,7 +181,7 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
             "dates": ["April 13, 2021", "April 23, 2021"],
             "titles": ["JJ vaccine <br> paused", "JJ vaccine <br> unpaused"],
             "hovertexts": [
-                "CDC and FDA pause distribution <br> of J&J vaccine due to reports of rare blood clots <br> (CDC)",
+                "CDC and FDA pause distribution <br> of J&J vaccine due to reports of rare blood clots <br> (Centers for Disease Control)",
                 "US lifts pause in use of J&J vaccine <br> after vote by expert panel <br> (NPR)",
             ],
             "ax": -30,
@@ -192,14 +192,33 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     if "Canada" in unique_locations:
         location = "Canada"
         annotations = {
-            "location": "Canada",
+            "location": location,
             "dates": ["March 29, 2021"],
             "titles": ["AZ vaccine pause <br> recommended"],
             "hovertexts": [
-                "Suspend AstraZeneca use for people under 55, <br> vaccine committee recommends <br> (CBC.ca)"
+                "Suspend AstraZeneca use for people under 55, <br> vaccine committee recommends <br> (Canadian Broadcasting Corporation)"
             ],
             "ax": -50,
             "ay": -90,
+        }
+        all_annotations[location] = annotations
+    if "North America" in unique_locations:
+        location = "North America"
+        annotations = {
+            "location": location,
+            "dates": ["March 29, 2021", "April 13, 2021", "April 23, 2021"],
+            "titles": [
+                "AZ vaccine pause <br> recommended",
+                "JJ vaccine <br> paused",
+                "JJ vaccine <br> unpaused",
+            ],
+            "hovertexts": [
+                "Suspend AstraZeneca use for people under 55, <br> vaccine committee recommends <br> (Canadian Broadcasting Corporation)",
+                "CDC and FDA pause distribution <br> of J&J vaccine due to reports of rare blood clots <br> (Centers for Disease Control)",
+                "US lifts pause in use of J&J vaccine <br> after vote by expert panel <br> (NPR)",
+            ],
+            "ax": -30,
+            "ay": -70,
         }
         all_annotations[location] = annotations
 
@@ -207,21 +226,22 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
         location = "Europe"
         annotations = {
             "location": "Europe",
-            "dates": ["March 14, 2021", "April 3, 2021"],
+            "dates": ["March 7, 2021", "April 3, 2021"],
             "titles": [
-                "AstraZeneca clots <br> confirmed",
-                "EMA report released",
+                "Austria suspends <br> AZ use",
+                "EMA report <br> released",
             ],
             "hovertexts": [
-                """Studies suggest link between blood clots, AstraZeneca <br> (University of Minnesota CIDRAP News)""",
-                """EMA finds link to very rare cases of unusual blood clots <br> (European Medicines Agency statement)""",
+                """Austria suspends AstraZeneca <br> COVID-19 vaccine batch after death <br> (Reuters)""",
+                """EMA finds link to very rare cases of unusual blood clots <br> (European Medicines Agency)""",
             ],
-            "ax": -4,
-            "ay": -65,
+            "ax": 20,
+            "ay": -60,
         }
         all_annotations[location] = annotations
 
     for country in all_annotations.keys():
+        st.write(country)
         annotations = all_annotations[country]
         annotation_creator(
             fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
