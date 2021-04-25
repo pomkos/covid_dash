@@ -83,75 +83,6 @@ def graph_caller(
             use_container_width=False,
         )
 
-
-def find_xy_annotations(date, location, ylabel, df):
-    """
-    Finds the x and y values to place annotations in
-
-    input
-    ----
-    date: str
-    location: str
-    """
-    sig_date = pd.to_datetime(date)
-    temp_df = df[(df["location"] == location) & (df["date"] == sig_date)]
-    ymax = temp_df[ylabel].max()
-    return sig_date, ymax
-
-
-def annotation_creator(fig, ylabel, df, annotation_settings):
-    """
-    Adds annotations to plotly figure based on variable input, finds
-    coordinates using find_xy_annotations()
-
-    input
-    ----
-    fig: px.figure
-        Figure created via plotly express
-    ylabel: str
-        Column to grab yaxis values from
-    df: pd.DataFrame
-        Dataframe to graph
-    annotation_settings: dict
-        Dictionary with the following keys and values
-            dates: list
-                List of strings in form of "December 07, 1998"
-            location: str
-                Location the annotation is relevant for
-            titles: list
-                List of strings with text the label should show
-            hovertexts: list
-                List of strings with text the label should show after hovering mouse over the label itself
-            ax: int
-                Number of pixels to shift annotation on the x axis
-            ay: int
-                Number of pixels to shift annotation on the y axis
-    """
-    # get coordinates
-    for i in range(len(annotation_settings["dates"])):
-        sig_date, ymax = find_xy_annotations(
-            date=annotation_settings["dates"][i],
-            location=annotation_settings["location"],
-            ylabel=ylabel,
-            df=df,
-        )
-        # add the annotation
-        fig.add_annotation(
-            x=sig_date,
-            y=ymax,
-            text=annotation_settings["titles"][i],
-            showarrow=True,
-            arrowhead=2,
-            arrowside="end",
-            arrowsize=1,
-            standoff=2,
-            ax=annotation_settings["ax"],
-            ay=annotation_settings["ay"],
-            hovertext=annotation_settings["hovertexts"][i],
-            align="left",
-        )
-
-
 def graph_new_doses(ylabel, date_selected, premade_df, title):
     """
     Sole function to graph new doses and call functions to add annotations to the graph
@@ -170,6 +101,7 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
             "date": "",
         },
         color="location",
+        title="New doses administered per million"
     )
     unique_locations = premade_df["location"].unique()
 
@@ -240,9 +172,26 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
         }
         all_annotations[location] = annotations
 
+    if "India" in unique_locations:
+        location="India"
+        annotations = {
+            "location": location,
+            "dates": ["March 25, 2021", "April 20, 2021"],
+            "titles": [
+                "Restricted <br> AZ exports", "Foreign made <br> vaccines imported",
+            ],
+            "hovertexts": [
+                "India cuts back on vaccine exports as infections surge at home <br> (New York Times)",
+                "Pfizer, Moderna, J&J, Sputnik V vaccines have been allowed for import in India <br> (BBC)",
+            ],
+            "ax": -30,
+            "ay": -70,
+        }
+        all_annotations[location] = annotations
+
     for country in all_annotations.keys():
         annotations = all_annotations[country]
-        annotation_creator(
+        h.annotation_creator(
             fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
         )
     info_box.info("__Tip__: Move cursor over annotations for more details")

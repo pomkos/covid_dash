@@ -31,7 +31,25 @@ all_columns.sort()
 # create session
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
-
+    # if "India" in unique_locations:
+    #     location="India"
+    #     annotations = {
+    #         "location": location,
+    #         "dates": ["March 25, 2021", "March 29, 2021", "April 20, 2021"],
+    #         "titles": [
+    #             "Restricted <br> AZ exports", "Mumbai hospitals <br> under gov ctrl", "Foreign made <br> vaccines imported",
+    #         ],
+    #         "hovertexts": [
+    #             "India cuts back on vaccine exports as infections surge at home <br> (New York Times)",
+    #             """Mumbai put all hospitals and nursing homes under temporary gov control, <br>
+    #                ordered them to discharge asymptomatic patients without comorbidities, <br>
+    #                and instructed private hospitals to reserve ICUs for COVID19 patients <br> (NPR)""",
+    #             "Pfizer, Moderna, J&J, Sputnik V vaccines have been allowed for import in India <br> (BBC)",
+    #         ],
+    #         "ax": -30,
+    #         "ay": -70,
+    #     }
+    #     all_annotations[location] = annotations
 
 def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='location'):
     '''
