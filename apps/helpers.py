@@ -108,7 +108,7 @@ def line_plotter(
     if title == None:
         title = f"{str_formatter(y)} vs {str_formatter(x)}"
     labels = hue_formatter(x, y, hue)
-    my_plot = px.line(
+    fig = px.line(
         data_frame=dataset,
         x=x,
         log_x=xlog,
@@ -119,8 +119,8 @@ def line_plotter(
         color=hue,
         **kwargs,
     )
-    my_plot.update_layout(hovermode="x")
-    return my_plot
+    fig.update_layout(hovermode="x")
+    return fig
 
 
 def bar_plotter(x, y, dataset, hue=None, xlog=False, ylog=False, title=None, **kwargs):

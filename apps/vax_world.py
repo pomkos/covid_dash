@@ -105,6 +105,20 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     )
     unique_locations = premade_df["location"].unique()
 
+    all_annotations = annotation_data(unique_locations)
+    if not all_annotations:
+        st.plotly_chart(fig)
+    else:
+        for country in all_annotations.keys():
+            annotations = all_annotations[country]
+            h.annotation_creator(
+                fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
+            )
+        info_box.info("__Tip__: Move cursor over annotations for more details")
+        st.plotly_chart(fig)
+
+
+def annotation_data(unique_locations):
     all_annotations = {}
     if "United States" in unique_locations:
         location = "United States"
@@ -188,21 +202,30 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
             "ay": -70,
         }
         all_annotations[location] = annotations
-
-    for country in all_annotations.keys():
-        annotations = all_annotations[country]
-        h.annotation_creator(
-            fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
-        )
-    info_box.info("__Tip__: Move cursor over annotations for more details")
-    st.plotly_chart(fig)
-
+    if "Hungary" in unique_locations:
+        location="Hungary"
+        annotations = {
+            "location": location,
+            "dates": ["April 22, 2021"],
+            "titles": [
+                "Hungary limited <br> reopening",
+            ],
+            "hovertexts": [
+                "Hungary expected to reopen restaurant terraces as COVID shots accelerate <br> (Reuters)",
+            ],
+            "ax": -30,
+            "ay": +75,
+        }
+        all_annotations[location] = annotations
+    else:
+        return None
+    return all_annotations
 
 def app():
     options = [
+        "New doses administered",
         "Fully vaccinated",
         "Partially vaccinated",
-        "New doses administered",
     ]
     plot_selected = st.sidebar.selectbox("Select a plot", options, index=0)
     date_selected = st.sidebar.date_input(
