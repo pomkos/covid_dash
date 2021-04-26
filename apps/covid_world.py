@@ -66,7 +66,7 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
                 title=title,
             ),
     all_locations = premade_df['location'].unique()
-    all_annotations = h.get_annotation_data(all_locations, label='cases')
+    all_annotations = h.get_annotation_data(all_locations, label='cases', conn=news_cnx)
 
     if not all_annotations: # all_annotations is None, dont call annotation creator
         st.plotly_chart(fig[0])
