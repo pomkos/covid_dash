@@ -32,48 +32,6 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
-def annotation_data(unique_locations):
-    '''
-    Temporarily stores data for covid annotations, eventually will move to db. See vax_world for vaccine annots.
-    '''
-    all_annotations = {}
-    if "India" in unique_locations:
-        location="India"
-        annotations = {
-            "location": location,
-            "dates": ["March 29, 2021"],
-            "titles": [
-                "Mumbai hospitals <br> under gov ctrl",
-            ],
-            "hovertexts": [
-                """Mumbai put all hospitals and nursing homes under temporary gov control, <br>
-                ordered them to discharge asymptomatic patients without comorbidities, <br>
-                and instructed private hospitals to reserve ICUs for COVID19 patients <br> (NPR)""",
-            ],
-            "ax": -30,
-            "ay": -70,
-        }
-        all_annotations[location] = annotations
-    if "Hungary" in unique_locations:
-        location="Hungary"
-        annotations = {
-            "location": location,
-            "dates": ["April 22, 2021"],
-            "titles": [
-                "Hungary limited <br> reopening",
-            ],
-            "hovertexts": [
-                "Hungary expected to reopen restaurant terraces as COVID shots accelerate <br> (Reuters)",
-            ],
-            "ax": -30,
-            "ay": -75,
-        }
-        all_annotations[location] = annotations
-    else: # if there are no countries in the db, then return none
-        return None
-    return all_annotations
-
-
 def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='location'):
     '''
     Calls h.line_plotter(). Created to avoid repetitive code.
@@ -108,7 +66,7 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
                 title=title,
             ),
     all_locations = premade_df['location'].unique()
-    all_annotations = annotation_data(all_locations)
+    all_annotations = h.get_annotation_data(all_locations, label='cases',conn=cnx)
 
     if not all_annotations: # all_annotations is None, dont call annotation creator
         st.plotly_chart(fig[0])

@@ -105,121 +105,16 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     )
     unique_locations = premade_df["location"].unique()
 
-    all_annotations = annotation_data(unique_locations)
+    all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=cnx)
     if not all_annotations:
         st.plotly_chart(fig)
     else:
         for country in all_annotations.keys():
-            annotations = all_annotations[country]
-            h.annotation_creator(
-                fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=annotations
+            h.annotation_creator( # add annotations to the graph
+                fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=all_annotations[country]
             )
         info_box.info("__Tip__: Move cursor over annotations for more details")
         st.plotly_chart(fig)
-
-
-def annotation_data(unique_locations):
-    all_annotations = {}
-    if "United States" in unique_locations:
-        location = "United States"
-        annotations = {
-            "location": location,
-            "dates": ["April 13, 2021", "April 23, 2021"],
-            "titles": ["JJ vaccine <br> paused", "JJ vaccine <br> unpaused"],
-            "hovertexts": [
-                "CDC and FDA pause distribution <br> of J&J vaccine due to reports of rare blood clots <br> (Centers for Disease Control)",
-                "US lifts pause in use of J&J vaccine <br> after vote by expert panel <br> (NPR)",
-            ],
-            "ax": -30,
-            "ay": -70,
-        }
-        all_annotations[location] = annotations
-
-    if "Canada" in unique_locations:
-        location = "Canada"
-        annotations = {
-            "location": location,
-            "dates": ["March 29, 2021"],
-            "titles": ["AZ vaccine pause <br> recommended"],
-            "hovertexts": [
-                "Suspend AstraZeneca use for people under 55, <br> vaccine committee recommends <br> (Canadian Broadcasting Corporation)"
-            ],
-            "ax": -50,
-            "ay": -90,
-        }
-        all_annotations[location] = annotations
-    if "North America" in unique_locations:
-        location = "North America"
-        annotations = {
-            "location": location,
-            "dates": ["March 29, 2021", "April 13, 2021", "April 23, 2021"],
-            "titles": [
-                "AZ vaccine pause <br> recommended",
-                "JJ vaccine <br> paused",
-                "JJ vaccine <br> unpaused",
-            ],
-            "hovertexts": [
-                "Suspend AstraZeneca use for people under 55, <br> vaccine committee recommends <br> (Canadian Broadcasting Corporation)",
-                "CDC and FDA pause distribution <br> of J&J vaccine due to reports of rare blood clots <br> (Centers for Disease Control)",
-                "US lifts pause in use of J&J vaccine <br> after vote by expert panel <br> (NPR)",
-            ],
-            "ax": -30,
-            "ay": -70,
-        }
-        all_annotations[location] = annotations
-
-    if "Europe" in unique_locations:
-        location = "Europe"
-        annotations = {
-            "location": "Europe",
-            "dates": ["March 7, 2021", "April 3, 2021"],
-            "titles": [
-                "Austria suspends <br> AZ use",
-                "EMA report <br> released",
-            ],
-            "hovertexts": [
-                """Austria suspends AstraZeneca <br> COVID-19 vaccine batch after death <br> (Reuters)""",
-                """EMA finds link to very rare cases of unusual blood clots <br> (European Medicines Agency)""",
-            ],
-            "ax": 20,
-            "ay": -60,
-        }
-        all_annotations[location] = annotations
-
-    if "India" in unique_locations:
-        location="India"
-        annotations = {
-            "location": location,
-            "dates": ["March 25, 2021", "April 20, 2021"],
-            "titles": [
-                "Restricted <br> AZ exports", "Foreign made <br> vaccines imported",
-            ],
-            "hovertexts": [
-                "India cuts back on vaccine exports as infections surge at home <br> (New York Times)",
-                "Pfizer, Moderna, J&J, Sputnik V vaccines have been allowed for import in India <br> (BBC)",
-            ],
-            "ax": -30,
-            "ay": -70,
-        }
-        all_annotations[location] = annotations
-    if "Hungary" in unique_locations:
-        location="Hungary"
-        annotations = {
-            "location": location,
-            "dates": ["April 22, 2021"],
-            "titles": [
-                "Hungary limited <br> reopening",
-            ],
-            "hovertexts": [
-                "Hungary expected to reopen restaurant terraces as COVID shots accelerate <br> (Reuters)",
-            ],
-            "ax": -30,
-            "ay": +75,
-        }
-        all_annotations[location] = annotations
-    else:
-        return None
-    return all_annotations
 
 def app():
     options = [

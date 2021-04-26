@@ -1,3 +1,4 @@
+The only purpose of this branch is to allow streamlit.io to clone the project with an included sqlite dataset. See the deployed app [here](https://share.streamlit.io/pomkos/covid_dash/streamlit_deploy/covid_dash.py)!
 # Table of Contents
 
 1. [Description](#description)
@@ -12,8 +13,6 @@
     2. [Host](#host)
 # Description
 Covid dash and analysis using streamlit.
-
-See at: https://covid.peti.work
 
 # Screenshots
 ## Premade graphs

@@ -155,6 +155,35 @@ def find_xy_annotations(date, location, ylabel, df):
     return sig_date, ymax
 
 
+def get_annotation_data(unique_locations, label, conn):
+    '''
+    Retrieves news data from db, returns a dictionary of lists. Each list has a dictionary.
+    
+    input
+    -----
+    unique_locations: list
+        List of countries that annotations are needed for
+    label: str
+        String of "vax" or "cases", indicating which graph the data is used for
+    conn: sqlalchemy conn
+        Connection database
+    '''
+    import pandas as pd
+    all_annotations = {}
+    dataframe = pd.read_sql('news',conn)
+    relevant_df = dataframe[dataframe['label']==label]
+    for ctry in unique_locations:
+        if ctry in relevant_df['location'].unique():
+            data = relevant_df[relevant_df['location'] == ctry]
+            sub_dict = {} # initialize sub dict
+            for row in data.itertuples(index=False):
+                data_dict = dict(row._asdict())
+                if ctry in all_annotations.keys():
+                    all_annotations[ctry].append(data_dict)
+                else:
+                    all_annotations[ctry] = [data_dict]
+    return all_annotations
+
 def annotation_creator(fig, ylabel, df, annotation_settings):
     """
     Adds annotations to plotly figure based on variable input, finds
@@ -183,26 +212,28 @@ def annotation_creator(fig, ylabel, df, annotation_settings):
             ay: int
                 Number of pixels to shift annotation on the y axis
     """
+    
     # get coordinates
-    for i in range(len(annotation_settings["dates"])):
+    for i in range(len(annotation_settings)):
+        ctry_dict = annotation_settings[i]
         sig_date, ymax = find_xy_annotations(
-            date=annotation_settings["dates"][i],
-            location=annotation_settings["location"],
+            date=ctry_dict['dates'],
+            location=ctry_dict["location"],
             ylabel=ylabel,
             df=df,
         )
-        # add the annotation
+        # add annotation to the figure
         fig.add_annotation(
             x=sig_date,
             y=ymax,
-            text=annotation_settings["titles"][i],
+            text=ctry_dict["titles"],
             showarrow=True,
             arrowhead=2,
             arrowside="end",
             arrowsize=1,
             standoff=2,
-            ax=annotation_settings["ax"],
-            ay=annotation_settings["ay"],
-            hovertext=annotation_settings["hovertexts"][i],
+            ax=ctry_dict["ax"],
+            ay=ctry_dict["ay"],
+            hovertext=ctry_dict["hovertexts"],
             align="left",
         )
