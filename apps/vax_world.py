@@ -17,6 +17,10 @@ import sys  # for script args
 
 from apps import helpers as h  # helper functions
 
+# connect to news engine
+news_engine = sq.create_engine("sqlite:///data/covid_news.db")
+news_cnx = news_engine.connect()
+
 ###################
 ## Load metadata ##
 ###################
@@ -105,7 +109,7 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     )
     unique_locations = premade_df["location"].unique()
 
-    all_annotations = h.get_annotation_data(unique_locations, label='vax')
+    all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=news_cnx)
     if not all_annotations:
         st.plotly_chart(fig)
     else:
