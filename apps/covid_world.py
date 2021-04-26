@@ -171,6 +171,9 @@ def app():
         st.sidebar.info(
             "__Note__: China not included by default due to low reported numbers"
         )
+        china_wanted = st.sidebar.checkbox("Add China")
+        if china_wanted:
+            default.append("China")
 
     else:
         default = ["Canada", "Hungary", "United States"]
