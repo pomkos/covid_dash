@@ -17,14 +17,6 @@ import sys  # for script args
 
 from apps import helpers as h  # helper functions
 
-# connect to news engine
-news_engine = sq.create_engine("sqlite:///data/covid_news.db")
-news_cnx = news_engine.connect()
-
-###################
-## Load metadata ##
-###################
-
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
 engine = sq.create_engine("sqlite:///data/covid_db.sqlite")
@@ -41,6 +33,10 @@ all_columns.sort()
 # create session
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
+
+# connect to news engine
+news_engine = sq.create_engine("sqlite:///data/covid_news.db")
+news_cnx = news_engine.connect()
 
 
 def graph_caller(

@@ -32,6 +32,10 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
+# connect to news engine
+news_engine = sq.create_engine("sqlite:///data/covid_news.db")
+news_cnx = news_engine.connect()
+
 def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='location'):
     '''
     Calls h.line_plotter(). Created to avoid repetitive code.
