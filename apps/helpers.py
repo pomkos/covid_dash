@@ -1,6 +1,5 @@
 import streamlit as st
 import plotly.express as px
-
 ########################
 ### HELPER FUNCTIONS ###
 ########################
@@ -153,7 +152,6 @@ def find_xy_annotations(date, location, ylabel, df):
     temp_df = df[(df["location"] == location) & (df["date"] == sig_date)]
     ymax = temp_df[ylabel].max()
     return sig_date, ymax
-
 
 def get_annotation_data(unique_locations, label, conn):
     '''

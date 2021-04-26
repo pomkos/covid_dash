@@ -17,7 +17,8 @@ from apps import helpers as h  # helper functions
 
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
-engine = sq.create_engine("sqlite:///data/covid_db.sqlite")
+
+engine = sq.create_engine("sqlite:///data/covid_db.sqlite", connect_args={"check_same_thread": False})
 cnx = engine.connect()
 meta = sq.MetaData()
 # get all schemas
@@ -31,6 +32,10 @@ all_columns.sort()
 # create session
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
+
+# connect to news engine
+news_engine = sq.create_engine("sqlite:///data/covid_news.db", connect_args={"check_same_thread": False})
+news_cnx = news_engine.connect()
 
 def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='location'):
     '''
@@ -66,7 +71,7 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
                 title=title,
             ),
     all_locations = premade_df['location'].unique()
-    all_annotations = h.get_annotation_data(all_locations, label='cases',conn=cnx)
+    all_annotations = h.get_annotation_data(all_locations, label='cases', conn=news_cnx)
 
     if not all_annotations: # all_annotations is None, dont call annotation creator
         st.plotly_chart(fig[0])

@@ -17,13 +17,9 @@ import sys  # for script args
 
 from apps import helpers as h  # helper functions
 
-###################
-## Load metadata ##
-###################
-
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
-engine = sq.create_engine("sqlite:///data/covid_db.sqlite")
+engine = sq.create_engine("sqlite:///data/covid_db.sqlite", connect_args={"check_same_thread": False})
 cnx = engine.connect()
 meta = sq.MetaData()
 # get all schemas
@@ -37,6 +33,10 @@ all_columns.sort()
 # create session
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
+
+# connect to news engine
+news_engine = sq.create_engine("sqlite:///data/covid_news.db", connect_args={"check_same_thread": False})
+news_cnx = news_engine.connect()
 
 
 def graph_caller(
@@ -105,7 +105,7 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     )
     unique_locations = premade_df["location"].unique()
 
-    all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=cnx)
+    all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=news_cnx)
     if not all_annotations:
         st.plotly_chart(fig)
     else:
