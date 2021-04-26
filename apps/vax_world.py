@@ -105,7 +105,7 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     )
     unique_locations = premade_df["location"].unique()
 
-    all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=cnx)
+    all_annotations = h.get_annotation_data(unique_locations, label='vax')
     if not all_annotations:
         st.plotly_chart(fig)
     else:

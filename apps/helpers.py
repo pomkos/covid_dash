@@ -1,6 +1,6 @@
 import streamlit as st
 import plotly.express as px
-
+import sqlalchemy as sq
 ########################
 ### HELPER FUNCTIONS ###
 ########################
@@ -154,8 +154,12 @@ def find_xy_annotations(date, location, ylabel, df):
     ymax = temp_df[ylabel].max()
     return sig_date, ymax
 
+# connect to news engine
+news_engine = sq.create_engine("sqlite:///data/covid_news.db")
+news_cnx = news_engine.connect()
 
-def get_annotation_data(unique_locations, label, conn):
+
+def get_annotation_data(unique_locations, label, conn = news_cnx):
     '''
     Retrieves news data from db, returns a dictionary of lists. Each list has a dictionary.
     
