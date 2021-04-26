@@ -19,7 +19,7 @@ from apps import helpers as h  # helper functions
 
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
-engine = sq.create_engine("sqlite:///data/covid_db.sqlite")
+engine = sq.create_engine("sqlite:///data/covid_db.sqlite", connect_args={"check_same_thread": False})
 cnx = engine.connect()
 meta = sq.MetaData()
 # get all schemas
@@ -35,7 +35,7 @@ Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
 # connect to news engine
-news_engine = sq.create_engine("sqlite:///data/covid_news.db")
+news_engine = sq.create_engine("sqlite:///data/covid_news.db", connect_args={"check_same_thread": False})
 news_cnx = news_engine.connect()
 
 
