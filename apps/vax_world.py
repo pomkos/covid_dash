@@ -90,6 +90,7 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
     Source for annotations: https://plotly.com/python/reference/layout/annotations
     """
     info_box = st.empty()
+    show_annot = st.checkbox("Show annotations",value=True)
     fig = px.line(
         data_frame=premade_df,
         x="date",
@@ -104,15 +105,19 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
         title="New doses administered per million"
     )
     unique_locations = premade_df["location"].unique()
-
-    all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=news_cnx)
-    if not all_annotations:
-        st.plotly_chart(fig)
+    
+    if show_annot:
+        all_annotations = h.get_annotation_data(unique_locations, label='vax', conn=news_cnx)
+        if not all_annotations:
+            st.plotly_chart(fig)
+        else:
+            for country in all_annotations.keys():
+                h.annotation_creator( # add annotations to the graph
+                    fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=all_annotations[country]
+                )
+            info_box.info("__Tip__: Move cursor over annotations for more details")
+            st.plotly_chart(fig)
     else:
-        for country in all_annotations.keys():
-            h.annotation_creator( # add annotations to the graph
-                fig=fig, ylabel=ylabel, df=premade_df, annotation_settings=all_annotations[country]
-            )
         info_box.info("__Tip__: Move cursor over annotations for more details")
         st.plotly_chart(fig)
 
@@ -232,6 +237,6 @@ def app():
             title = "Percent population with at least one dose administered"
             perc_range = True
             my_info = "__Description:__ Percent of population who received at least one dose, including fully dosed populations"
-
+        
         graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
     st.info(my_info)

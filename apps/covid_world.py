@@ -37,7 +37,7 @@ session = Session()
 news_engine = sq.create_engine("sqlite:///data/covid_news.db", connect_args={"check_same_thread": False})
 news_cnx = news_engine.connect()
 
-def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='location'):
+def graph_caller(ylabel, date_selected, premade_df, title, show_annot=False, ylog=False, yrange = None, hue='location'):
     '''
     Calls h.line_plotter(). Created to avoid repetitive code.
     
@@ -70,14 +70,17 @@ def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = 
                 labels={ylabel: h.ylabel_format(ylabel, ylog), "date": "", "location":""},
                 title=title,
             ),
-    all_locations = premade_df['location'].unique()
-    all_annotations = h.get_annotation_data(all_locations, label='cases', conn=news_cnx)
+    if show_annot:
+        all_locations = premade_df['location'].unique()
+        all_annotations = h.get_annotation_data(all_locations, label='cases', conn=news_cnx)
 
-    if not all_annotations: # all_annotations is None, dont call annotation creator
-        st.plotly_chart(fig[0])
+        if not all_annotations: # all_annotations is None, dont call annotation creator
+            st.plotly_chart(fig[0])
+        else:
+            for country in all_annotations.keys():
+                h.annotation_creator(fig[0], ylabel, df = premade_df, annotation_settings = all_annotations[country])
+            st.plotly_chart(fig[0])
     else:
-        for country in all_annotations.keys():
-            h.annotation_creator(fig[0], ylabel, df = premade_df, annotation_settings = all_annotations[country])
         st.plotly_chart(fig[0])
 
 
@@ -200,7 +203,11 @@ def app():
         placeholder.info(
             "__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save."
         )
-        ylog = st.checkbox("log(y axis)")
+        col_annot, col_ylog = st.beta_columns(2)
+        with col_annot:
+            show_annot = st.checkbox("Show annotations",value=True)
+        with col_ylog:
+            ylog = st.checkbox("log(y axis)")
 
         if ylog:
             placeholder.info(
@@ -223,4 +230,4 @@ def app():
             ylabel = "hosp_patients_per_million"
             title="Hospital patients per million by location"
             placeholder.warning("The graph may be blank as not all countries publish hospital data")
-        graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
+        graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog, show_annot=show_annot)
