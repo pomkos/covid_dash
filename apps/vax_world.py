@@ -123,9 +123,9 @@ def graph_new_doses(ylabel, date_selected, premade_df, title):
 
 def app():
     options = [
-        "New doses administered",
         "Fully vaccinated",
         "Partially vaccinated",
+        "New doses administered",
     ]
     plot_selected = st.sidebar.selectbox("Select a plot", options, index=0)
     date_selected = st.sidebar.date_input(
