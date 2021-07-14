@@ -149,7 +149,7 @@ def app():
         "Partially vaccinated",
         "New doses administered",
     ]
-    plot_selected = st.sidebar.selectbox("Select a plot", options, index=1)
+    plot_selected = st.sidebar.selectbox("Select a plot", options, index=0)
 
     ##### Retrieve #####
 
