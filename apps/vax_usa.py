@@ -105,41 +105,42 @@ def overview(yesterday, dataframe):
     '''
     Show who's winning the vaccine wars
     '''
+    choose = st.sidebar.radio("", options = ["Fully vaccinated", "Partially vaccinated"]).lower()
     top_df = dataframe[dataframe.date.apply(lambda x: True if x.date() == yesterday else False)]
-    col = 'all_doses_vaccinated_per_hundred'
-    res = top_df.sort_values(col, ascending=False)
-    fig1 = px.bar(
+    color = None
+    sort = st.checkbox("Sort by region")
+    if sort:
+        color = 'region'
+    if "fully" in choose:
+        col = 'all_doses_vaccinated_per_hundred'
+        res = top_df.sort_values(col, ascending=False)
+        title='Fully vaccinated population'
+        description = "__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses"
+
+    elif "partially" in choose:
+        col = 'one_dose_vaccinated_per_hundred'
+        res = top_df.sort_values(col, ascending=False)
+        title='At least one dose administered'
+        description = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
+    res = res[~res['state'].str.contains('Puerto')]
+    fig = px.bar(
         data_frame = res,
         x='state',
         y=col,
+        color=color,
         range_y=(0,100),
-        title='Fully vaccinated population',
+        title=title,
         labels={
             col:h.ylabel_format(col, ylog=False),
-            'state':''
+            'state':'',
+            'region':'Region'
         }
     )
 
-    col = 'one_dose_vaccinated_per_hundred'
-    res = top_df.sort_values(col, ascending=False)
-    fig2 = px.bar(
-        data_frame = res,
-        x='state',
-        y=col,
-        range_y=(0,100),
-        title='At least one dose administered',
-        labels={
-            col:h.ylabel_format(col, ylog=False),
-            'state':''
-        }
-    )
-
-    fig1.add_hline(y=70, line_dash='dot', line_color='red', annotation_text='Herd immunity')
-    fig2.add_hline(y=70, line_dash='dot', line_color='red', annotation_text='Herd immunity')
-    st.plotly_chart(fig1)
-    st.write("__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses")
-    st.plotly_chart(fig2)
-    st.write("__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)")
+    fig.add_hline(y=70, line_dash='dot', line_color='red', annotation_text='Herd immunity')
+    st.plotly_chart(fig)
+    st.write("")
+    st.write(description)
         
 def app():
     options = [
