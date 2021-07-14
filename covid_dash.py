@@ -32,7 +32,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)  # hides the hamburger
 def app():
     """Bulk of webgui, calls relevant functions"""
     data_choice = st.sidebar.radio(
-        "", ["World Vaccinations", "USA Cases", "World Cases", "Animations"], index=0
+        "", ["World Vaccinations","USA Vaccinations" , "USA Cases", "World Cases", "Animations"], index=0
     )
     st.sidebar.write("--------")
 
@@ -60,7 +60,11 @@ def app():
         url = "https://github.com/owid/covid-19-data/tree/master/public/data"
         from apps import vax_world
         vax_world.app()
-
+    elif "usa vacc" in data_choice.lower():
+        st.title("Vaccine Dash")
+        url = "https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations"
+        from apps import vax_usa
+        vax_usa.app()
     source = f"[Data source]({url})"
     st.sidebar.write(source)
 app()
