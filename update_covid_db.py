@@ -3,6 +3,7 @@ import sqlalchemy as sq
 import datetime as dt
 import os
 import sys
+pd.options.mode.chained_assignment = None    # disable notuseful error. Default='warn'
 
 def cat_state(my_string):
     '''
