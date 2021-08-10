@@ -31,6 +31,17 @@ all_columns.sort()
 Session = sqo.sessionmaker(bind=engine)
 session = Session()
 
+def get_top_states(dataframe, num=2, col='weekly_rolling_new_cases_per_100k'):
+    '''
+    Returns the top 'num' states with the highest 'col' value
+    '''
+    ### get the top states ###
+    # get latest data
+    new_df = dataframe[dataframe['date'] == dataframe['date'].max()]
+    new_df = new_df.sort_values(col, ascending=False)
+    top_n_array = new_df[['date','state',col]].iloc[:3,1].values
+    return list(top_n_array)
+
 def graph_caller(ylabel, date_selected, premade_df, title, ylog=False, yrange = None, hue='state'):
     '''
     Calls h.line_plotter(). Created to avoid repetitive code.
@@ -109,9 +120,12 @@ def app():
     regions.sort()
     region_options = region_options + regions
     region = st.sidebar.radio("Preset states", options=region_options, index=0)
-
+    
     if region == 'Default':
-        default = ['Ohio','Texas']
+        default_options = get_top_states(my_df)
+        default = ['Ohio','Texas'] + default_options # we want Ohio and TX as defaults always
+        default = list(dict.fromkeys(default)) # remove duplicates
+
     elif region == 'Regions':
         my_df = my_df.groupby(['date','region']).mean().reset_index()
         my_df = my_df.rename({'region':'state'}, axis=1) # rename so I dont have to change code hehehe
