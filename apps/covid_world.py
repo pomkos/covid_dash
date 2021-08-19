@@ -203,7 +203,7 @@ def app():
         placeholder.info(
             "__Instructions:__ Move mouse into plot to interact. Drag and select to zoom. Double click to reset. Click the camera to save."
         )
-        col_annot, col_ylog = st.beta_columns(2)
+        col_annot, col_ylog = st.columns(2)
         with col_annot:
             show_annot = st.checkbox("Show annotations",value=True)
         with col_ylog:

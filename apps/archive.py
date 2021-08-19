@@ -3,7 +3,7 @@ Deprecated functions, in case I wanted to implement them later
 '''
 def byo_app():
     if view_type == "Build Your Own!":
-        col_plots, col_dates = st.beta_columns(2)
+        col_plots, col_dates = st.columns(2)
 
         with col_plots:
             plt_type = st.selectbox(
@@ -33,7 +33,7 @@ def build_own(x_options, y_options, hue_options, date_selected, plt_type="linepl
     # webgui
 
     my_cols = []
-    col_x, col_y, col_hue = st.beta_columns(3)
+    col_x, col_y, col_hue = st.columns(3)
     with col_x:
         x_default = h.find_default(x_options, "date")
         x = st.selectbox(
