@@ -1,4 +1,4 @@
-The only purpose of this branch is to allow streamlit.io to clone the project with an included sqlite dataset. See the deployed app [here](https://share.streamlit.io/pomkos/covid_dash/streamlit_deploy/covid_dash.py)!
+The only purpose of this branch is to allow streamlit.io to clone the project with an included sqlite dataset. See the deployed app [here](https://covid.peti.work)!
 # Table of Contents
 
 1. [Description](#description)
