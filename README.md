@@ -1,4 +1,6 @@
-The only purpose of this branch is to allow streamlit.io to clone the project with an included sqlite dataset. See the deployed app [here](https://covid.peti.work)!
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://covid.peti.work)
+
+The only purpose of this branch is to allow streamlit.io to clone the project with an included sqlite dataset. 
 # Table of Contents
 
 1. [Description](#description)
