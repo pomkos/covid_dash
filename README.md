@@ -1,4 +1,4 @@
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://covid.peti.work)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/pomkos/covid_dash/main/https://share.streamlit.io/pomkos/payme/main/payme.py.py)
 
 The only purpose of this branch is to allow streamlit.io to clone the project with an included sqlite dataset. 
 # Table of Contents
