@@ -113,9 +113,11 @@ def app():
     resultset = h.sql_orm_requester(premade_cols, table, session)
     session.close()
     my_df = pd.DataFrame(resultset)
+    my_df.columns = premade_cols
+
     my_df["date"] = pd.to_datetime(my_df["date"])
     
-    region_options = ["Default", "Regions"]
+    region_options = ["Default", "Regions", "All States"]
     regions = [r for r in my_df['region'].unique() if r != None]
     regions.sort()
     region_options = region_options + regions
@@ -130,6 +132,8 @@ def app():
         my_df = my_df.groupby(['date','region']).mean().reset_index()
         my_df = my_df.rename({'region':'state'}, axis=1) # rename so I dont have to change code hehehe
         default = regions
+    elif region == 'All States':
+        default = list(my_df['state'].unique())
     else:
         # get all the states that belong in that region
         default = list(my_df[my_df['region'] == region]['state'].unique())
@@ -161,3 +165,8 @@ def app():
         ylabel = "deaths_per_100k"
         title = "Total deaths by state"
     graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog)
+    
+    # leaderboard
+    yesterday = dt.datetime.now() - dt.timedelta(days=2)
+    fig = h.overview_plotter(yesterday.date(), premade_df, x='state', y=ylabel, title=f"Top {title.lower()} in the past week")
+    st.plotly_chart(fig)

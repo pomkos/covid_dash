@@ -5,6 +5,39 @@ import plotly.express as px
 ########################
 
 
+def overview_plotter(yesterday, dataframe, title, y, x, sortby='region',):
+    '''
+    Show who's winning. Returns a bar graph of selected cat variables.
+    '''
+    top_df = dataframe[dataframe.date.apply(lambda x: True if x.date() >= yesterday else False)]
+    sort = st.checkbox(f"Sort by {sortby}")
+    if sort:
+        color = sortby
+        if (color == 'continent') | (color == 'region'):
+            co = list(dataframe[color].unique())
+            if None in co:
+                co.remove(None)
+            top_df = top_df[top_df[color].isin(co)]
+
+    else:
+        color = None
+
+    res = top_df.sort_values(y, ascending=False)
+    fig = px.bar(
+        data_frame = res,
+        x=x,
+        y=y,
+        color=color,
+        title=title,
+        labels={
+            y: ylabel_format(y, ylog=False),
+            x: str_formatter(x),
+            sortby:sortby
+        }
+    )
+
+    return fig
+
 def ylabel_format(my_string, ylog):
     if my_string == "rolling_pos_per_tests":
         my_string = "Positivity ratio"

@@ -148,11 +148,12 @@ def app():
 
     my_df = pd.DataFrame(h.sql_orm_requester(columns, table, session))
     session.close()
+    my_df.columns = columns
 
     my_df["date"] = pd.to_datetime(my_df["date"])
 
     # st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-    region_options = ["Default", "Continents"]
+    region_options = ["Default", "Continents", "World"]
     regions = ["North America", "West Europe", "East Europe", "Nordics", "Asia"]
     regions.sort()
     region_options = region_options + regions
@@ -205,7 +206,8 @@ def app():
         st.sidebar.info(
             "__Note__: China not included by default due to low reported numbers"
         )
-
+    elif region == "World":
+        default = list(my_df['location'].unique())
     else:
         default = ["Canada", "Hungary", "United States"]
     default.sort()
@@ -240,3 +242,8 @@ def app():
         
         graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
     st.info(my_info)
+    
+    # leaderboard
+    yesterday = dt.datetime.now() - dt.timedelta(days=2)
+    fig = h.overview_plotter(yesterday.date(), premade_df, x='location', y=ylabel, title=f"Top {title.lower()} in the past week", sortby='continent')
+    st.plotly_chart(fig)

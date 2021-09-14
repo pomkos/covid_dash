@@ -118,10 +118,12 @@ def app():
     ]
 
     my_df = pd.DataFrame(h.sql_orm_requester(columns, table, session))
+    my_df.columns = columns
+
     my_df["date"] = pd.to_datetime(my_df["date"])
 
     # st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-    region_options = ["Default", "Continents"]
+    region_options = ["Default", "Continents", "World"]
     regions = ["North America", "West Europe", "East Europe", "Nordics", "Asia"]
     regions.sort()
     region_options = region_options + regions
@@ -177,7 +179,8 @@ def app():
         china_wanted = st.sidebar.checkbox("Add China")
         if china_wanted:
             default.append("China")
-
+    elif region == "World":
+        default = list(my_df['location'].unique())
     else:
         default = ["Canada", "Hungary", "United States"]
     default.sort()
@@ -231,3 +234,7 @@ def app():
             title="Hospital patients per million by location"
             placeholder.warning("The graph may be blank as not all countries publish hospital data")
         graph_caller(ylabel, date_selected, premade_df, title, ylog=ylog, show_annot=show_annot)
+    # leaderboard
+    yesterday = dt.datetime.now() - dt.timedelta(days=2)
+    fig = h.overview_plotter(yesterday.date(), premade_df, x='location', y=ylabel, sortby='continent', title=f"Top {title.lower()} in the past week")
+    st.plotly_chart(fig)

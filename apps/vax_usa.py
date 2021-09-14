@@ -144,7 +144,6 @@ def overview(yesterday, dataframe):
         
 def app():
     options = [
-        'Overview',
         "Fully vaccinated",
         "Partially vaccinated",
         "New doses administered",
@@ -165,67 +164,65 @@ def app():
 
     my_df = pd.DataFrame(h.sql_orm_requester(columns, table, session))
     session.close()
+    my_df.columns = columns
 
     my_df["date"] = pd.to_datetime(my_df["date"])
 
     plot_selected = plot_selected.lower()
 
-    if 'overview' in plot_selected:
-        yesterday = dt.datetime.now().date() - dt.timedelta(days=2)
-        st.info('The CDC [has not defined](https://www.cdc.gov/coronavirus/2019-ncov/communication/vaccination-toolkit.html) a threshold for herd immunity against COVID19, however 70% is cited by the [Mayoclinic](https://www.mayoclinic.org/diseases-conditions/coronavirus/in-depth/herd-immunity-and-coronavirus/art-20486808).')
-        overview(yesterday, my_df)
-        my_info=None
-        
-        
+    date_selected = st.sidebar.date_input(
+        "Change the dates?", value=(dt.datetime(2020, 12, 1), dt.datetime.now())
+    )
+    if len(date_selected) != 2:
+        st.info("Select a beginning and end date")
+        st.stop()
+    region_options = ["Default", "Regions"]
+    regions = [r for r in my_df['region'].unique() if r != None]
+    regions.sort()
+    region_options = region_options + regions
+    region = st.sidebar.radio("Preset states", options=region_options, index=0)
+
+    if region == 'Default':
+        default = ['Ohio','Texas']
+    elif region == 'Regions':
+        my_df = my_df.groupby(['date','region']).mean().reset_index()
+        my_df = my_df.rename({'region':'state'}, axis=1) # rename so I dont have to change code hehehe
+        default = regions
     else:
-        date_selected = st.sidebar.date_input(
-            "Change the dates?", value=(dt.datetime(2020, 12, 1), dt.datetime.now())
-        )
-        if len(date_selected) != 2:
-            st.info("Select a beginning and end date")
-            st.stop()
-        region_options = ["Default", "Regions"]
-        regions = [r for r in my_df['region'].unique() if r != None]
-        regions.sort()
-        region_options = region_options + regions
-        region = st.sidebar.radio("Preset states", options=region_options, index=0)
-        
-        if region == 'Default':
-            default = ['Ohio','Texas']
-        elif region == 'Regions':
-            my_df = my_df.groupby(['date','region']).mean().reset_index()
-            my_df = my_df.rename({'region':'state'}, axis=1) # rename so I dont have to change code hehehe
-            default = regions
-        else:
-            # get all the states that belong in that region
-            default = list(my_df[my_df['region'] == region]['state'].unique())
+        # get all the states that belong in that region
+        default = list(my_df[my_df['region'] == region]['state'].unique())
 
-        premade_df = h.dataset_filterer(my_df, "state", default_selected=default)
-        if "new doses" in plot_selected:
-            # this one gets its own plot. With annotations and hookers!
-            ylabel = "weekly_rolling_new_cases_per_100k"
-            title = "New doses administered per 100k"
-            graph_new_doses(ylabel, date_selected, premade_df, title)
-            my_info = "__Description:__ New doses administered this week, regardless of vaccine brand or type"
+    premade_df = h.dataset_filterer(my_df, "state", default_selected=default)
+    if "new doses" in plot_selected:
+        # this one gets its own plot. With annotations and hookers!
+        ylabel = "weekly_rolling_new_cases_per_100k"
+        title = "New doses administered per 100k"
+        graph_new_doses(ylabel, date_selected, premade_df, title)
+        my_info = "__Description:__ New doses administered this week, regardless of vaccine brand or type"
 
-        else:
-            if "fully vacc" in plot_selected:
-                ylabel = "all_doses_vaccinated_per_hundred"
-                title = "Percent population fully vaccinated"
-                perc_range = True
-                my_info = "__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses"
-            elif "partially vacc" in plot_selected:
-                ylabel = "one_dose_vaccinated_per_hundred"
-                title = "Percent population partially vaccinated"
-                perc_range = True
-                my_info = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
-            elif (
-                "all doses" in plot_selected
-            ):  # deprecated. shows USA as 60% vaxxed, which is clearly wrong ...
-                ylabel = "total_vaccinations_per_hundred"
-                title = "Percent population with at least one dose administered"
-                perc_range = True
-                my_info = "__Description:__ Percent of population who received at least one dose, including fully dosed populations"
-            graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
+    else:
+        if "fully vacc" in plot_selected:
+            ylabel = "all_doses_vaccinated_per_hundred"
+            title = "Percent population fully vaccinated"
+            perc_range = True
+            my_info = "__Description:__ Percent of population who are fully vaccinated, whether through one (ex: JJ) or two (ex: Pfizer) doses"
+        elif "partially vacc" in plot_selected:
+            ylabel = "one_dose_vaccinated_per_hundred"
+            title = "Percent population partially vaccinated"
+            perc_range = True
+            my_info = "__Description:__ Percent of population who are only partially vaccinated (ex: one dose of Pfizer)"
+        elif (
+            "all doses" in plot_selected
+        ):  # deprecated. shows USA as 60% vaxxed, which is clearly wrong ...
+            ylabel = "total_vaccinations_per_hundred"
+            title = "Percent population with at least one dose administered"
+            perc_range = True
+            my_info = "__Description:__ Percent of population who received at least one dose, including fully dosed populations"
+        graph_caller(ylabel, date_selected, premade_df, title, perc_range=perc_range)
+
     if type(my_info) == str:
         st.info(my_info)
+    yesterday = dt.datetime.now().date() - dt.timedelta(days=2)
+    st.info('The CDC [has not defined](https://www.cdc.gov/coronavirus/2019-ncov/communication/vaccination-toolkit.html) a threshold for herd immunity against COVID19, however 70% is cited by the [Mayoclinic](https://www.mayoclinic.org/diseases-conditions/coronavirus/in-depth/herd-immunity-and-coronavirus/art-20486808).')
+    overview(yesterday, my_df)
+    my_info=None
