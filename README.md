@@ -59,66 +59,19 @@ Covid dash and analysis using streamlit.
 * [ ] Premade heatmaps
 * [ ] Usermade heatmaps
 
-# How tos
-## Run
+# Host
 
-1. Clone the repository:
-```
-git clone https://github.com/pomkos/covid_dash
-cd covid_dash
-```
+```bash
+sudo chmod +x install.sh
+sudo chmod +x start_me.sh
+sudo chmod +x update_db.sh
 
-2. Create a conda environment (optional):
-
-```
-conda create --name "covid_env"
+./install.sh
 ```
 
-3. Activate environment, install python, install dependencies.
+Installer script will:
 
-```
-conda activate covid_env
-conda install python=3.8
-pip install -r requirements.txt
-```
-3. Start the application:
-```
-streamlit run covid_dash.py
-```
-5. Access the portfolio at `localhost:8501`
-
-## Host
-
-1. Create a new file outside the `covid_dash` directory:
-
-```
-cd
-nano covid_dash.sh
-```
-
-2. Paste the following in it, then save and exit:
-
-```
-#!/bin/bash
-
-source ~/anaconda3/etc/profile.d/conda.sh
-
-cd ~/covid_dash
-conda activate covid_env
-
-nohup streamlit run covid_dash.py --server.port 8504 &
-```
-
-3. Edit crontab so portfolio is started when server reboots
-
-```
-crontab -e
-```
-
-4. Add the following to the end, then save and exit
-
-```
-@reboot /home/covid_dash.sh
-```
-
-5. Access the portfolio at `localhost:8504`
+1. Create new environment
+2. Install all required python libraries
+3. Add a cronjob to cron (if user desires, can be done post installation as well)
+4. Start the covid_dash script on `port 8504`
