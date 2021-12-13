@@ -10,7 +10,7 @@ read input
 function edit_cron(){
     crontab -l > file
     echo "# start after each reboot" >> file
-    echo "@reboot $HOME/projects/covid_dash/start_me.sh" >> file
+    echo "@reboot      $HOME/projects/covid_dash/start_me.sh" >> file
     echo "# run five minutes after midnight, every day" >> file
     echo "5 0 * * *      $HOME/projects/covid_dash/update_db.sh" >> file
     crontab file
