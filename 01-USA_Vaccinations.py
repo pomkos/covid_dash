@@ -17,6 +17,7 @@ import sys  # for script args
 
 from apps import helpers as h  # helper functions
 
+st.title('Vaccine Dash')
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
 engine = sq.create_engine("sqlite:///data/covid_db.sqlite", connect_args={"check_same_thread": False})
@@ -106,7 +107,7 @@ def overview(yesterday, dataframe):
     Show who's winning the vaccine wars
     '''
     choose = st.sidebar.radio("", options = ["Fully vaccinated", "Partially vaccinated"]).lower()
-    top_df = dataframe[dataframe.date.apply(lambda x: True if x.date() == yesterday else False)]
+    top_df = dataframe[dataframe.date.apply(lambda x: True if x.date() >= yesterday else False)]
     color = None
     sort = st.checkbox("Sort by region")
     if sort:
@@ -225,4 +226,8 @@ def app():
     yesterday = dt.datetime.now().date() - dt.timedelta(days=2)
     st.info('The CDC [has not defined](https://www.cdc.gov/coronavirus/2019-ncov/communication/vaccination-toolkit.html) a threshold for herd immunity against COVID19, however 70% is cited by the [Mayoclinic](https://www.mayoclinic.org/diseases-conditions/coronavirus/in-depth/herd-immunity-and-coronavirus/art-20486808).')
     overview(yesterday, my_df)
-    my_info=None
+
+    url = "https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations"
+    h.source_viewer(url)
+
+app()

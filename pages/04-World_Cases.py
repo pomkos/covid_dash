@@ -18,6 +18,7 @@ from apps import helpers as h  # helper functions
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
 
+st.title('Covid Dash')
 engine = sq.create_engine("sqlite:///data/covid_db.sqlite", connect_args={"check_same_thread": False})
 cnx = engine.connect()
 meta = sq.MetaData()
@@ -238,3 +239,8 @@ def app():
     yesterday = dt.datetime.now() - dt.timedelta(days=2)
     fig = h.overview_plotter(yesterday.date(), premade_df, x='location', y=ylabel, sortby='continent', title=f"Top {title.lower()} in the past week")
     st.plotly_chart(fig)
+
+    url = "https://github.com/owid/covid-19-data/tree/master/public/data"
+    h.source_viewer(url)
+
+app()

@@ -59,5 +59,10 @@ def cache_the_map():  # I dont think this works ...
 
 def app():
     st.title("Confirmed Covid Cases in 2020")
+    url = "https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series"
+    h.source_viewer(url)
+
     my_map = cache_the_map()
     st.plotly_chart(my_map)
+
+app()

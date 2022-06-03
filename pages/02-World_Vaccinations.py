@@ -17,6 +17,7 @@ import sys  # for script args
 
 from apps import helpers as h  # helper functions
 
+st.title('Vaccine Dash')
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
 engine = sq.create_engine("sqlite:///data/covid_db.sqlite", connect_args={"check_same_thread": False})
@@ -247,3 +248,8 @@ def app():
     yesterday = dt.datetime.now() - dt.timedelta(days=2)
     fig = h.overview_plotter(yesterday.date(), premade_df, x='location', y=ylabel, title=f"Top {title.lower()} in the past week", sortby='continent')
     st.plotly_chart(fig)
+
+    url = "https://github.com/owid/covid-19-data/tree/master/public/data"
+    h.source_viewer(url)
+
+app()

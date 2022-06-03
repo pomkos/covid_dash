@@ -14,6 +14,7 @@ import os  # current directory
 
 from apps import helpers as h  # helper functions
 
+st.title('Covid Dash')
 # connect to db
 # engine = sq.create_engine(f'postgres://{us_pw}@{db_ip}:{port}')
 engine = sq.create_engine("sqlite:///data/covid_db.sqlite")
@@ -170,3 +171,8 @@ def app():
     yesterday = dt.datetime.now() - dt.timedelta(days=2)
     fig = h.overview_plotter(yesterday.date(), premade_df, x='state', y=ylabel, title=f"Top {title.lower()} in the past week")
     st.plotly_chart(fig)
+
+    url = "https://github.com/nytimes/covid-19-data"
+    h.source_viewer(url)
+
+app()

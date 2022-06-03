@@ -5,6 +5,13 @@ import plotly.express as px
 ########################
 
 
+def source_viewer(url):
+    '''
+    Adds the source to the sidebar
+    '''
+    source = f"[Data source]({url})"
+    st.sidebar.write(source)
+
 def overview_plotter(yesterday, dataframe, title, y, x, sortby='region',):
     '''
     Show who's winning. Returns a bar graph of selected cat variables.
